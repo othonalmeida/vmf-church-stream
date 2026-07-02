@@ -25,9 +25,12 @@ RUN npm run prisma:generate -w apps/api
 RUN mkdir -p apps/api/uploads
 
 ENV NODE_ENV=production
-ENV PORT=4000
+# Nao fixar PORT: plataformas como Railway injetam a propria em runtime, e
+# src/env.ts ja tem um default (4000) para quando nada for fornecido (ex:
+# docker run local sem -e PORT).
 ENV FFMPEG_PATH=ffmpeg
 ENV FFPROBE_PATH=ffprobe
+# Apenas documentacao (nao afeta roteamento real, que depende da PORT em runtime).
 EXPOSE 4000
 
 CMD ["npm", "run", "start", "-w", "apps/api"]

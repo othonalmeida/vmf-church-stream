@@ -22,11 +22,16 @@ RUN npm run build -w apps/web
 FROM node:22-bookworm-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
-ENV PORT=3000
+# Nao fixar PORT aqui: plataformas como Railway injetam sua propria PORT em
+# tempo de execucao, e um valor hardcoded no Dockerfile pode conflitar com
+# ela dependendo de como a plataforma mescla env vars. server.js (gerado pelo
+# output "standalone" do Next.js) le process.env.PORT e cai para 3000 sozinho
+# se nada for definido, entao nao precisamos de um default aqui.
 
 COPY --from=builder /app/apps/web/public ./apps/web/public
 COPY --from=builder /app/apps/web/.next/standalone ./
 COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
 
+# Apenas documentacao (nao afeta roteamento real, que depende da PORT em runtime).
 EXPOSE 3000
 CMD ["node", "apps/web/server.js"]
