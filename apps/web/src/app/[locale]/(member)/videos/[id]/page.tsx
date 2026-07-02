@@ -152,38 +152,41 @@ export default function VideoDetailPage() {
         <div className="flex gap-2">
           <button
             onClick={handleShare}
-            className="flex items-center gap-1.5 rounded-xl border border-surface-border px-3 py-2 text-sm text-ink-700 hover:bg-surface-border"
+            title={t("share")}
+            className="flex items-center gap-1.5 rounded-xl border border-surface-border px-2.5 py-2 text-sm text-ink-700 hover:bg-surface-border sm:px-3"
           >
             <Share2 className="h-4 w-4" />
-            {t("share")}
+            <span className="hidden sm:inline">{t("share")}</span>
           </button>
           <button
             onClick={toggleFavorite}
-            className="flex items-center gap-1.5 rounded-xl border border-surface-border px-3 py-2 text-sm text-ink-700 hover:bg-surface-border"
+            title={isFavorited ? t("favorited") : t("favorite")}
+            className="flex items-center gap-1.5 rounded-xl border border-surface-border px-2.5 py-2 text-sm text-ink-700 hover:bg-surface-border sm:px-3"
           >
             <Heart className={cn("h-4 w-4", isFavorited && "fill-red-400 text-red-400")} />
-            {isFavorited ? t("favorited") : t("favorite")}
+            <span className="hidden sm:inline">{isFavorited ? t("favorited") : t("favorite")}</span>
           </button>
           {video.allowDownload && (
             <button
               onClick={handleDownloadToggle}
               disabled={downloadProgress !== null}
-              className="flex items-center gap-1.5 rounded-xl border border-surface-border px-3 py-2 text-sm text-ink-700 hover:bg-surface-border disabled:opacity-60"
+              title={t("download")}
+              className="flex items-center gap-1.5 rounded-xl border border-surface-border px-2.5 py-2 text-sm text-ink-700 hover:bg-surface-border disabled:opacity-60 sm:px-3"
             >
               {downloadProgress !== null ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  {downloadProgress}%
+                  <span className="hidden sm:inline">{downloadProgress}%</span>
                 </>
               ) : isDownloaded ? (
                 <>
-                  <Check className="h-4 w-4 text-emerald-400" />
-                  {t("downloaded")}
+                  <Check className="h-4 w-4 text-emerald-600" />
+                  <span className="hidden sm:inline">{t("downloaded")}</span>
                 </>
               ) : (
                 <>
                   <Download className="h-4 w-4" />
-                  {t("download")}
+                  <span className="hidden sm:inline">{t("download")}</span>
                 </>
               )}
             </button>

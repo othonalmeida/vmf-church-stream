@@ -37,12 +37,12 @@ export default function BrowsePage() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-10">
       <BannerCarousel banners={banners} />
 
-      <h1 className="text-2xl font-semibold text-ink-950">
-        {t("welcome")}, {user?.name}
-      </h1>
+      <p className="-mt-4 text-sm text-ink-500">
+        {t("welcome")}, <span className="font-medium text-ink-950">{user?.name}</span>
+      </p>
 
       {continueWatching.length > 0 && (
         <Section title={t("continueWatching")}>
