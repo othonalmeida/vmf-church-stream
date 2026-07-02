@@ -71,7 +71,11 @@ export async function apiFetch<T = unknown>(path: string, options: RequestOption
       ...rest,
       credentials: "include",
       headers: {
-        ...(isFormData ? {} : { "Content-Type": "application/json" }),
+        // So define Content-Type: application/json quando realmente ha um
+        // corpo JSON sendo enviado. Setar esse header sem corpo (comum em
+        // DELETE/GET) faz o Chrome recente rejeitar o fetch com
+        // "Body cannot be empty when content-type is set to 'application/json'".
+        ...(body !== undefined && !isFormData ? { "Content-Type": "application/json" } : {}),
         ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
         ...headers,
       },
