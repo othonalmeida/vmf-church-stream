@@ -22,11 +22,11 @@ RUN npm run build -w apps/web
 FROM node:22-bookworm-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
-ENV PORT=3000
 
 COPY --from=builder /app/apps/web/public ./apps/web/public
 COPY --from=builder /app/apps/web/.next/standalone ./
 COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
 
-EXPOSE 3000
+EXPOSE 8080
 CMD ["node", "apps/web/server.js"]
+
