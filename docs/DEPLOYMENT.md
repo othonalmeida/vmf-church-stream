@@ -27,6 +27,10 @@ Este guia usa **Supabase** (Postgres gerenciado + Storage compatível com S3, nu
 3. Em cada serviço, configure as variáveis de ambiente (seção 3 abaixo).
 4. Gere domínios públicos para os dois serviços (Railway oferece um subdomínio `*.up.railway.app` grátis, ou conecte um domínio próprio).
 
+### Pegadinha real: porta do domínio gerado
+
+O Railway injeta sua própria variável `PORT` em tempo de execução (não aparece na lista de Variables que você configura manualmente — é reservada da plataforma), e nosso código respeita esse valor (`env.PORT` sem hardcode). Ao clicar em **Generate Domain**, o Railway pergunta qual porta rotear — **não confie no valor do `.env.example`/Dockerfile (4000)**: depois de gerar o domínio, olhe os **Deploy Logs** do serviço, procure a linha `VMF API listening on http://localhost:XXXX` e confirme que a porta configurada no domínio (Settings → Networking → editar a porta ao lado do domínio) bate com esse valor. Se não bater, todo request retorna **502 "Application failed to respond"** mesmo com o deployment marcado como "Active"/"successful" — o container sobe normalmente, só o roteamento público é que fica errado.
+
 ### Domínio único — obrigatório para o login funcionar
 
 O cookie de refresh token usa `SameSite=Lax`, o que só funciona entre web e API se os dois estiverem sob o **mesmo domínio registrável**. Configure domínios customizados assim:

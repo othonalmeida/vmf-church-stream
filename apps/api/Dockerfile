@@ -20,6 +20,10 @@ COPY apps/api apps/api
 
 RUN npm run prisma:generate -w apps/api
 
+# Scratch local sempre necessario (ffmpeg/upload leem e escrevem aqui antes de
+# publicar no storage configurado), mesmo quando STORAGE_DRIVER=s3.
+RUN mkdir -p apps/api/uploads
+
 ENV NODE_ENV=production
 ENV PORT=4000
 ENV FFMPEG_PATH=ffmpeg
