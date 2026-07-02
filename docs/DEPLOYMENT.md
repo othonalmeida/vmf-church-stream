@@ -7,9 +7,9 @@ Este guia usa **Supabase** (Postgres gerenciado + Storage compatível com S3, nu
 ## 1. Banco de dados + Storage (Supabase) **[VOCÊ FAZ]**
 
 1. Crie uma conta em [supabase.com](https://supabase.com) e um novo projeto (escolha uma região próxima aos seus usuários).
-2. **Connection strings do Postgres**: clique em **Connect** (topo do dashboard do projeto) → aba **ORM** → selecione **Prisma**. Copie as duas URLs mostradas:
-   - `DATABASE_URL` — pooler em modo **transaction** (porta 6543, `pgbouncer=true`): usada pela aplicação em runtime.
-   - `DIRECT_URL` — pooler em modo **session** (porta 5432): usada apenas pelo `prisma migrate` (o modo transaction não suporta prepared statements). O `schema.prisma` já está configurado para ler as duas.
+2. **Connection strings do Postgres**: clique em **Connect** (topo do dashboard do projeto) → aba **ORM** → selecione **Prisma**. O modal mostra duas URLs — uma no pooler em modo **transaction** (porta 6543, `pgbouncer=true`) e outra em modo **session** (porta 5432).
+
+   **Use a porta 5432 (modo session) tanto em `DATABASE_URL` quanto em `DIRECT_URL`.** A API é um servidor Node persistente (não serverless), e o modo transaction reabre a conexão TCP/TLS a cada query — isso mediu ~700ms de handshake por request nos nossos testes, deixando toda a navegação visivelmente lenta. O modo session mantém a conexão aberta e reutilizada, caindo pra ~1/3 do tempo por request. O modo transaction (6543) só compensa pra clientes serverless com muitas conexões curtas e simultâneas, que não é o nosso caso.
 
    Troque `[YOUR-PASSWORD]` pela senha do banco que você definiu ao criar o projeto (ou redefina em *Project Settings → Database*).
 3. **Bucket de mídia**: em *Storage*, crie um bucket chamado `media` e marque como **Public bucket** (os vídeos/thumbnails/legendas precisam ser publicamente legíveis para o player funcionar).
@@ -47,7 +47,7 @@ Se você usar os domínios genéricos do Railway (`web-production-xxxx.up.railwa
 |---|---|
 | `NODE_ENV` | `production` |
 | `PORT` | `4000` (Railway injeta a porta real via `PORT`, o Dockerfile já usa `process.env.PORT`) |
-| `DATABASE_URL` | connection string do pooler transaction (passo 1.2) |
+| `DATABASE_URL` | connection string do pooler em modo session, porta 5432 (passo 1.2) |
 | `DIRECT_URL` | connection string do pooler session (passo 1.2) — só usada pelo `prisma migrate` |
 | `JWT_ACCESS_SECRET` | gere com `openssl rand -base64 48` |
 | `JWT_REFRESH_SECRET` | gere com `openssl rand -base64 48` (diferente do access) |
@@ -81,7 +81,7 @@ Depois que o serviço `api` subir pela primeira vez (mesmo que ainda com erro po
 **Opção A — do seu computador**, usando as mesmas `DATABASE_URL`/`DIRECT_URL` de produção (o `prisma migrate deploy` usa `DIRECT_URL` automaticamente, já que está declarada no `schema.prisma`):
 ```
 cd apps/api
-DATABASE_URL="postgresql://...:6543/postgres?pgbouncer=true" DIRECT_URL="postgresql://...:5432/postgres" npx prisma migrate deploy
+DATABASE_URL="postgresql://...:5432/postgres" DIRECT_URL="postgresql://...:5432/postgres" npx prisma migrate deploy
 ```
 
 **Opção B — via Railway CLI**, rodando dentro do ambiente do serviço:
@@ -91,7 +91,7 @@ railway run --service api npx prisma migrate deploy
 
 Depois, popule os dados iniciais (categorias + usuário admin):
 ```
-DATABASE_URL="postgresql://...:6543/postgres?pgbouncer=true" DIRECT_URL="postgresql://...:5432/postgres" SEED_ADMIN_EMAIL="admin@suaigreja.org" SEED_ADMIN_PASSWORD="escolha-uma-senha-forte" npx prisma db seed
+DATABASE_URL="postgresql://...:5432/postgres" DIRECT_URL="postgresql://...:5432/postgres" SEED_ADMIN_EMAIL="admin@suaigreja.org" SEED_ADMIN_PASSWORD="escolha-uma-senha-forte" npx prisma db seed
 ```
 
 **Troque a senha do admin no primeiro login** — o seed usa uma senha padrão previsível se as variáveis `SEED_ADMIN_*` não forem passadas.
