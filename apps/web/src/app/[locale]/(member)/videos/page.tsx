@@ -50,7 +50,7 @@ export default function VideosPage() {
           <button
             onClick={() => setCategoryId("")}
             className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${
-              categoryId === "" ? "bg-ink-900 text-ink-950" : "bg-surface-raised text-ink-600 border border-surface-border"
+              categoryId === "" ? "bg-ink-900 text-white" : "bg-surface-raised text-ink-600 border border-surface-border"
             }`}
           >
             {t("all")}
@@ -60,7 +60,7 @@ export default function VideosPage() {
               key={c.id}
               onClick={() => setCategoryId(c.id)}
               className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${
-                categoryId === c.id ? "bg-ink-900 text-ink-950" : "bg-surface-raised text-ink-600 border border-surface-border"
+                categoryId === c.id ? "bg-ink-900 text-white" : "bg-surface-raised text-ink-600 border border-surface-border"
               }`}
             >
               {categoryName(c, locale)}
