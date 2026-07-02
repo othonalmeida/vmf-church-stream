@@ -66,17 +66,17 @@ export default function TrainingDetailPage() {
     }
   };
 
-  if (error) return <p className="rounded-lg bg-red-900/30 px-4 py-2 text-sm text-red-300">{error}</p>;
-  if (!training) return <p className="text-white/60">{tCommon("loading")}</p>;
+  if (error) return <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>;
+  if (!training) return <p className="text-ink-600">{tCommon("loading")}</p>;
 
   return (
     <div className="flex flex-col gap-6">
-      <Link href="/trainings" className="flex items-center gap-1 text-sm text-white/60 hover:text-white">
+      <Link href="/trainings" className="flex items-center gap-1 text-sm text-ink-600 hover:text-ink-950">
         <ArrowLeft className="h-4 w-4" />
         {tCommon("back")}
       </Link>
 
-      <h1 className="text-2xl font-semibold text-white">{training.title}</h1>
+      <h1 className="text-2xl font-semibold text-ink-950">{training.title}</h1>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
@@ -89,29 +89,29 @@ export default function TrainingDetailPage() {
                 onEnded={() => activeLesson && !activeLesson.completed && toggleComplete(activeLesson)}
               />
             ) : (
-              <Card className="flex aspect-video items-center justify-center text-white/60">
+              <Card className="flex aspect-video items-center justify-center text-ink-600">
                 {t("videoProcessing")}
               </Card>
             )
           ) : activeLesson?.contentType === "TEXT" && activeLesson.textContentId ? (
             <Card>
-              <Link href={`/texts/${activeLesson.textContentId}`} className="text-brand-300 hover:underline">
+              <Link href={`/texts/${activeLesson.textContentId}`} className="text-gold-700 hover:underline">
                 {t("openReading")}: {activeLesson.title}
               </Link>
             </Card>
           ) : (
-            <Card className="text-white/60">{t("selectLesson")}</Card>
+            <Card className="text-ink-600">{t("selectLesson")}</Card>
           )}
 
           {activeLesson && (
             <div className="mt-4 flex items-center justify-between">
               <div>
-                <h2 className="font-medium text-white">{activeLesson.title}</h2>
-                {activeLesson.description && <p className="text-sm text-white/60">{activeLesson.description}</p>}
+                <h2 className="font-medium text-ink-950">{activeLesson.title}</h2>
+                {activeLesson.description && <p className="text-sm text-ink-600">{activeLesson.description}</p>}
               </div>
               <button
                 onClick={() => toggleComplete(activeLesson)}
-                className="flex items-center gap-1.5 rounded-xl border border-surface-border px-3 py-2 text-sm text-white/80 hover:bg-surface-border"
+                className="flex items-center gap-1.5 rounded-xl border border-surface-border px-3 py-2 text-sm text-ink-700 hover:bg-surface-border"
               >
                 {activeLesson.completed ? <CheckCircle2 className="h-4 w-4 text-emerald-400" /> : <Circle className="h-4 w-4" />}
                 {activeLesson.completed ? t("completed") : t("markComplete")}
@@ -125,22 +125,22 @@ export default function TrainingDetailPage() {
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-border">
               <div className="h-full bg-brand-500" style={{ width: `${training.progressPercent ?? 0}%` }} />
             </div>
-            <span className="mt-1 block text-xs text-white/50">
+            <span className="mt-1 block text-xs text-ink-500">
               {training.progressPercent ?? 0}% {t("percentComplete")}
             </span>
           </div>
 
           {training.modules.map((module) => (
             <div key={module.id}>
-              <h3 className="mb-2 text-sm font-semibold text-white/80">{module.title}</h3>
+              <h3 className="mb-2 text-sm font-semibold text-ink-700">{module.title}</h3>
               <ul className="flex flex-col gap-1">
                 {module.lessons.map((lesson) => (
                   <li key={lesson.id}>
                     <button
                       onClick={() => setActiveLesson(lesson)}
                       className={cn(
-                        "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm text-white/70 hover:bg-surface-border",
-                        activeLesson?.id === lesson.id && "bg-surface-border text-white"
+                        "flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm text-ink-600 hover:bg-surface-border",
+                        activeLesson?.id === lesson.id && "bg-surface-border text-ink-950"
                       )}
                     >
                       {lesson.completed ? (
@@ -158,7 +158,7 @@ export default function TrainingDetailPage() {
             </div>
           ))}
 
-          {allLessons.length === 0 && <p className="text-sm text-white/50">{t("noLessons")}</p>}
+          {allLessons.length === 0 && <p className="text-sm text-ink-500">{t("noLessons")}</p>}
         </Card>
       </div>
     </div>

@@ -20,12 +20,12 @@ export function VideoCard({ video }: { video: VideoDTO }) {
 
   return (
     <Link href={`/videos/${video.id}`} className="group flex flex-col gap-2">
-      <div className="relative aspect-video overflow-hidden rounded-xl bg-surface-raised">
+      <div className="relative aspect-video overflow-hidden rounded-xl border border-surface-border bg-surface-raised">
         {thumb ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={thumb} alt={video.title} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-white/30">
+          <div className="flex h-full w-full items-center justify-center text-ink-300">
             <Play className="h-10 w-10" />
           </div>
         )}
@@ -41,7 +41,7 @@ export function VideoCard({ video }: { video: VideoDTO }) {
         )}
       </div>
       <div>
-        <h3 className="line-clamp-1 text-sm font-medium text-white">{video.title}</h3>
+        <h3 className="line-clamp-1 text-sm font-medium text-ink-950">{video.title}</h3>
       </div>
     </Link>
   );

@@ -23,14 +23,14 @@ export default function TrainingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold text-white">{t("title")}</h1>
-      {error && <p className="rounded-lg bg-red-900/30 px-4 py-2 text-sm text-red-300">{error}</p>}
-      {trainings.length === 0 && !error && <p className="text-white/60">{t("empty")}</p>}
+      <h1 className="text-2xl font-semibold text-ink-950">{t("title")}</h1>
+      {error && <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>}
+      {trainings.length === 0 && !error && <p className="text-ink-600">{t("empty")}</p>}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {trainings.map((training) => (
           <Link key={training.id} href={`/trainings/${training.id}`}>
-            <Card className="flex h-full flex-col gap-3 transition-colors hover:border-brand-500">
+            <Card className="flex h-full flex-col gap-3 transition-colors hover:border-gold-500">
               {training.imageUrl && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -39,8 +39,8 @@ export default function TrainingsPage() {
                   className="h-32 w-full rounded-lg object-cover"
                 />
               )}
-              <h2 className="font-medium text-white">{training.title}</h2>
-              {training.description && <p className="line-clamp-2 text-sm text-white/60">{training.description}</p>}
+              <h2 className="font-medium text-ink-950">{training.title}</h2>
+              {training.description && <p className="line-clamp-2 text-sm text-ink-600">{training.description}</p>}
               <div className="mt-auto">
                 <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-border">
                   <div
@@ -48,7 +48,7 @@ export default function TrainingsPage() {
                     style={{ width: `${training.progressPercent ?? 0}%` }}
                   />
                 </div>
-                <span className="mt-1 block text-xs text-white/50">
+                <span className="mt-1 block text-xs text-ink-500">
                   {training.progressPercent ?? 0}% {t("percentComplete")}
                 </span>
               </div>

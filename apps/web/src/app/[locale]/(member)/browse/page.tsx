@@ -40,7 +40,7 @@ export default function BrowsePage() {
     <div className="flex flex-col gap-8">
       <BannerCarousel banners={banners} />
 
-      <h1 className="text-2xl font-semibold text-white">
+      <h1 className="text-2xl font-semibold text-ink-950">
         {t("welcome")}, {user?.name}
       </h1>
 
@@ -63,7 +63,7 @@ export default function BrowsePage() {
                     <div className="h-full bg-brand-500" style={{ width: `${item.percentualWatched}%` }} />
                   </div>
                 </div>
-                <p className="mt-1.5 line-clamp-1 text-sm text-white">{item.title}</p>
+                <p className="mt-1.5 line-clamp-1 text-sm text-ink-950">{item.title}</p>
               </Link>
             );
           })}
@@ -93,7 +93,7 @@ export default function BrowsePage() {
                     className="h-24 w-full rounded-lg object-cover"
                   />
                 )}
-                <span className="line-clamp-1 text-sm text-white">{training.title}</span>
+                <span className="line-clamp-1 text-sm text-ink-950">{training.title}</span>
               </Card>
             </Link>
           ))}
@@ -105,8 +105,8 @@ export default function BrowsePage() {
           {events.map((event) => (
             <Link key={event.id} href="/events" className="w-48 shrink-0">
               <Card className="flex h-full flex-col gap-1 p-3">
-                <span className="text-xs text-brand-300">{new Date(event.startDate).toLocaleDateString()}</span>
-                <span className="line-clamp-2 text-sm text-white">{event.title}</span>
+                <span className="text-xs text-gold-700">{new Date(event.startDate).toLocaleDateString()}</span>
+                <span className="line-clamp-2 text-sm text-ink-950">{event.title}</span>
               </Card>
             </Link>
           ))}
@@ -119,7 +119,7 @@ export default function BrowsePage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="mb-3 text-lg font-medium text-white">{title}</h2>
+      <h2 className="mb-3 text-lg font-medium text-ink-950">{title}</h2>
       <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none">{children}</div>
     </section>
   );

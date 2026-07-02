@@ -7,23 +7,52 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        brand: {
-          50: "#f2f5ff",
-          100: "#e0e7ff",
-          200: "#c2cffe",
-          300: "#9bacfb",
-          400: "#7686f6",
-          500: "#5561ee",
-          600: "#4142d8",
-          700: "#3733ae",
-          800: "#302e8a",
-          900: "#2b2b6e",
-          950: "#151434",
+        // Dourado — destaques premium, links, estados ativos.
+        gold: {
+          50: "#fdfbf3",
+          100: "#f5e7b2",
+          200: "#eeda96",
+          300: "#e2c775",
+          400: "#d4b461",
+          500: "#c8a951",
+          600: "#b39240",
+          700: "#8f7433",
+          800: "#6b5827",
+          900: "#4a3d1c",
+        },
+        // Preto/cinza — texto e botões primários.
+        ink: {
+          50: "#f7f7f8",
+          100: "#eeeef0",
+          200: "#dcdce0",
+          300: "#b8b8c0",
+          400: "#8e8e96",
+          500: "#6b6b73",
+          600: "#4b5563",
+          700: "#3f3f46",
+          800: "#27272a",
+          900: "#18181b",
+          950: "#111111",
         },
         surface: {
-          DEFAULT: "#0b0c14",
-          raised: "#14151f",
-          border: "#232433",
+          DEFAULT: "#f8f9fa",
+          raised: "#ffffff",
+          border: "#e5e7eb",
+        },
+        // Mantido por compatibilidade com classes ja usadas no codigo;
+        // aponta para a escala dourada (era a cor "brand" indigo antiga).
+        brand: {
+          50: "#fdfbf3",
+          100: "#f5e7b2",
+          200: "#eeda96",
+          300: "#e2c775",
+          400: "#d4b461",
+          500: "#c8a951",
+          600: "#b39240",
+          700: "#8f7433",
+          800: "#6b5827",
+          900: "#4a3d1c",
+          950: "#332810",
         },
       },
       fontFamily: {

@@ -16,8 +16,8 @@ export function TopNav() {
   return (
     <header className="sticky top-0 z-40 hidden border-b border-surface-border bg-surface/90 backdrop-blur md:block">
       <div className="mx-auto flex max-w-7xl items-center gap-6 px-6 py-3">
-        <Link href="/browse" className="flex items-center gap-2 text-lg font-semibold text-white">
-          <span className="rounded-lg bg-brand-600 px-2 py-1 text-sm">VMF</span>
+        <Link href="/browse" className="flex items-center gap-2 text-lg font-semibold text-ink-950">
+          <span className="rounded-lg bg-ink-900 px-2 py-1 text-sm text-white">VMF</span>
           Church Stream
         </Link>
 
@@ -27,8 +27,8 @@ export function TopNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "rounded-lg px-3 py-2 text-sm font-medium text-white/70 hover:bg-surface-border hover:text-white",
-                pathname === item.href && "bg-surface-border text-white"
+                "rounded-lg px-3 py-2 text-sm font-medium text-ink-600 hover:bg-surface-border hover:text-ink-950",
+                pathname === item.href && "bg-gold-100 text-gold-800"
               )}
             >
               {t(item.labelKey)}
@@ -36,7 +36,7 @@ export function TopNav() {
           ))}
         </nav>
 
-        <Link href="/search" className="rounded-lg p-2 text-white/70 hover:bg-surface-border hover:text-white">
+        <Link href="/search" className="rounded-lg p-2 text-ink-600 hover:bg-surface-border hover:text-ink-950">
           <Search className="h-5 w-5" />
         </Link>
 
@@ -45,20 +45,20 @@ export function TopNav() {
         {user?.role === "ADMIN" && (
           <Link
             href="/admin/dashboard"
-            className="flex items-center gap-1.5 rounded-lg border border-surface-border px-3 py-1.5 text-xs font-medium text-white/80 hover:bg-surface-border"
+            className="flex items-center gap-1.5 rounded-lg border border-surface-border px-3 py-1.5 text-xs font-medium text-ink-700 hover:bg-surface-border"
           >
             <ShieldCheck className="h-4 w-4" />
             {t("admin")}
           </Link>
         )}
 
-        <Link href="/profile" className="text-sm text-white/80 hover:text-white">
+        <Link href="/profile" className="text-sm text-ink-700 hover:text-ink-950">
           {user?.name}
         </Link>
 
         <button
           onClick={() => logout()}
-          className="rounded-lg p-2 text-white/60 hover:bg-surface-border hover:text-white"
+          className="rounded-lg p-2 text-ink-500 hover:bg-surface-border hover:text-ink-950"
           aria-label={t("logout")}
         >
           <LogOut className="h-4 w-4" />

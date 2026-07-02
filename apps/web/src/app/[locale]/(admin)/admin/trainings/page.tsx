@@ -52,23 +52,23 @@ export default function AdminTrainingsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-white">Treinamentos</h1>
+        <h1 className="text-2xl font-semibold text-ink-950">Treinamentos</h1>
         <Button onClick={() => setModalOpen(true)}>
           <Plus className="h-4 w-4" />
           Novo treinamento
         </Button>
       </div>
 
-      {error && <p className="rounded-lg bg-red-900/30 px-4 py-2 text-sm text-red-300">{error}</p>}
+      {error && <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>}
       {!error && categories.length === 0 && (
-        <p className="rounded-lg bg-amber-900/20 px-4 py-2 text-sm text-amber-300">
+        <p className="rounded-lg bg-amber-50 px-4 py-2 text-sm text-amber-700">
           Cadastre uma categoria do tipo "Treinamento" antes de criar treinamentos.
         </p>
       )}
 
       <Card className="overflow-x-auto p-0">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-surface-border text-white/50">
+          <thead className="border-b border-surface-border text-ink-500">
             <tr>
               <th className="px-4 py-3 font-medium">Título</th>
               <th className="px-4 py-3 font-medium">Módulos</th>
@@ -79,19 +79,19 @@ export default function AdminTrainingsPage() {
           <tbody>
             {trainings.map((training) => (
               <tr key={training.id} className="border-b border-surface-border/60">
-                <td className="px-4 py-3 text-white">{training.title}</td>
-                <td className="px-4 py-3 text-white/70">{training.modules.length}</td>
+                <td className="px-4 py-3 text-ink-950">{training.title}</td>
+                <td className="px-4 py-3 text-ink-600">{training.modules.length}</td>
                 <td className="px-4 py-3">
                   <Badge tone={training.status === "PUBLISHED" ? "success" : "neutral"}>{training.status}</Badge>
                 </td>
                 <td className="px-4 py-3 text-right">
                   <Link
                     href={`/admin/trainings/${training.id}`}
-                    className="mr-2 inline-flex rounded p-1.5 text-white/60 hover:bg-surface-border hover:text-white"
+                    className="mr-2 inline-flex rounded p-1.5 text-ink-600 hover:bg-surface-border hover:text-ink-950"
                   >
                     <Settings className="h-4 w-4" />
                   </Link>
-                  <button onClick={() => handleDelete(training)} className="rounded p-1.5 text-white/60 hover:bg-red-500/20 hover:text-red-300">
+                  <button onClick={() => handleDelete(training)} className="rounded p-1.5 text-ink-600 hover:bg-red-100 hover:text-red-700">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </td>

@@ -11,9 +11,9 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: "bg-brand-600 hover:bg-brand-700 text-white",
-  secondary: "bg-surface-raised hover:bg-surface-border text-white border border-surface-border",
-  ghost: "bg-transparent hover:bg-surface-raised text-white",
+  primary: "bg-ink-900 hover:bg-ink-800 text-white",
+  secondary: "bg-surface-raised hover:bg-surface-border text-ink-950 border border-surface-border",
+  ghost: "bg-transparent hover:bg-surface-border text-ink-950",
   danger: "bg-red-600 hover:bg-red-700 text-white",
 };
 
@@ -31,7 +31,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {isLoading && (
-          <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-current/30 border-t-current" />
         )}
         {children}
       </button>

@@ -27,42 +27,42 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold text-white">Dashboard</h1>
-      {error && <p className="rounded-lg bg-red-900/30 px-4 py-2 text-sm text-red-300">{error}</p>}
+      <h1 className="text-2xl font-semibold text-ink-950">Dashboard</h1>
+      {error && <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>}
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {STAT_CARDS.map(({ key, label, icon: Icon }) => (
           <Card key={key} className="flex flex-col gap-2">
-            <Icon className="h-5 w-5 text-brand-400" />
-            <span className="text-2xl font-semibold text-white">{stats ? (stats[key] as number) : "—"}</span>
-            <span className="text-xs text-white/50">{label}</span>
+            <Icon className="h-5 w-5 text-gold-700" />
+            <span className="text-2xl font-semibold text-ink-950">{stats ? (stats[key] as number) : "—"}</span>
+            <span className="text-xs text-ink-500">{label}</span>
           </Card>
         ))}
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Card>
-          <h2 className="mb-3 font-medium text-white">Vídeos mais assistidos</h2>
+          <h2 className="mb-3 font-medium text-ink-950">Vídeos mais assistidos</h2>
           <ul className="flex flex-col gap-2">
             {stats?.mostWatchedVideos.map((v) => (
-              <li key={v.videoId} className="flex justify-between text-sm text-white/70">
+              <li key={v.videoId} className="flex justify-between text-sm text-ink-600">
                 <span>{v.title}</span>
-                <span className="text-white/40">{v.views} visualizações</span>
+                <span className="text-ink-400">{v.views} visualizações</span>
               </li>
             ))}
-            {stats && stats.mostWatchedVideos.length === 0 && <li className="text-sm text-white/50">Sem dados ainda.</li>}
+            {stats && stats.mostWatchedVideos.length === 0 && <li className="text-sm text-ink-500">Sem dados ainda.</li>}
           </ul>
         </Card>
         <Card>
-          <h2 className="mb-3 font-medium text-white">Usuários mais ativos</h2>
+          <h2 className="mb-3 font-medium text-ink-950">Usuários mais ativos</h2>
           <ul className="flex flex-col gap-2">
             {stats?.mostActiveUsers.map((u) => (
-              <li key={u.userId} className="flex justify-between text-sm text-white/70">
+              <li key={u.userId} className="flex justify-between text-sm text-ink-600">
                 <span>{u.name}</span>
-                <span className="text-white/40">{u.viewCount} visualizações</span>
+                <span className="text-ink-400">{u.viewCount} visualizações</span>
               </li>
             ))}
-            {stats && stats.mostActiveUsers.length === 0 && <li className="text-sm text-white/50">Sem dados ainda.</li>}
+            {stats && stats.mostActiveUsers.length === 0 && <li className="text-sm text-ink-500">Sem dados ainda.</li>}
           </ul>
         </Card>
       </div>

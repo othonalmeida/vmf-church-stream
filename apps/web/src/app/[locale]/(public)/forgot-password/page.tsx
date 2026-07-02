@@ -28,11 +28,11 @@ export default function ForgotPasswordPage() {
 
   return (
     <Card>
-      <h1 className="mb-1 text-2xl font-semibold text-white">{t("forgotPasswordTitle")}</h1>
-      <p className="mb-6 text-sm text-white/60">{t("forgotPasswordSubtitle")}</p>
+      <h1 className="mb-1 text-2xl font-semibold text-ink-950">{t("forgotPasswordTitle")}</h1>
+      <p className="mb-6 text-sm text-ink-600">{t("forgotPasswordSubtitle")}</p>
 
       {sent ? (
-        <p className="text-sm text-brand-300">{t("resetLinkSent")}</p>
+        <p className="text-sm text-gold-700">{t("resetLinkSent")}</p>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <Input
@@ -48,8 +48,8 @@ export default function ForgotPasswordPage() {
         </form>
       )}
 
-      <p className="mt-6 text-center text-sm text-white/60">
-        <Link href="/login" className="text-brand-300 hover:underline">
+      <p className="mt-6 text-center text-sm text-ink-600">
+        <Link href="/login" className="text-gold-700 hover:underline">
           {t("goToLogin")}
         </Link>
       </p>

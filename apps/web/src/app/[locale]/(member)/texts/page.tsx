@@ -45,23 +45,23 @@ export default function TextsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold text-white">{t("title")}</h1>
+      <h1 className="text-2xl font-semibold text-ink-950">{t("title")}</h1>
 
-      {error && <p className="rounded-lg bg-red-900/30 px-4 py-2 text-sm text-red-300">{error}</p>}
-      {isLoading && <p className="text-white/60">{tCommon("loading")}</p>}
-      {!isLoading && items.length === 0 && <p className="text-white/60">{t("empty")}</p>}
+      {error && <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>}
+      {isLoading && <p className="text-ink-600">{tCommon("loading")}</p>}
+      {!isLoading && items.length === 0 && <p className="text-ink-600">{t("empty")}</p>}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item) => (
           <Link key={item.id} href={`/texts/${item.id}`}>
-            <Card className="flex h-full flex-col gap-2 transition-colors hover:border-brand-500">
+            <Card className="flex h-full flex-col gap-2 transition-colors hover:border-gold-500">
               {item.imageUrl && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={item.imageUrl} alt={item.title} className="mb-2 h-32 w-full rounded-lg object-cover" />
               )}
-              <span className="text-xs uppercase tracking-wide text-brand-300">{findCategoryName(item.categoryId)}</span>
-              <h2 className="font-medium text-white">{item.title}</h2>
-              {item.description && <p className="line-clamp-2 text-sm text-white/60">{item.description}</p>}
+              <span className="text-xs uppercase tracking-wide text-gold-700">{findCategoryName(item.categoryId)}</span>
+              <h2 className="font-medium text-ink-950">{item.title}</h2>
+              {item.description && <p className="line-clamp-2 text-sm text-ink-600">{item.description}</p>}
             </Card>
           </Link>
         ))}

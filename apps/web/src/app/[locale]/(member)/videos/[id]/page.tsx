@@ -113,15 +113,15 @@ export default function VideoDetailPage() {
   };
 
   if (error) {
-    return <p className="rounded-lg bg-red-900/30 px-4 py-2 text-sm text-red-300">{error}</p>;
+    return <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>;
   }
   if (!video) {
-    return <p className="text-white/60">{t("loading")}</p>;
+    return <p className="text-ink-600">{t("loading")}</p>;
   }
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6">
-      <Link href="/videos" className="flex items-center gap-1 text-sm text-white/60 hover:text-white">
+      <Link href="/videos" className="flex items-center gap-1 text-sm text-ink-600 hover:text-ink-950">
         <ArrowLeft className="h-4 w-4" />
         {tCommon("back")}
       </Link>
@@ -135,15 +135,15 @@ export default function VideoDetailPage() {
           startAt={startAt}
         />
       ) : (
-        <Card className="flex aspect-video items-center justify-center text-white/60">
+        <Card className="flex aspect-video items-center justify-center text-ink-600">
           {video.transcodeStatus === "FAILED" ? t("failedMessage") : t("processingMessage")}
         </Card>
       )}
 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-white">{video.title}</h1>
-          <div className="mt-1 flex flex-wrap gap-2 text-xs text-white/50">
+          <h1 className="text-2xl font-semibold text-ink-950">{video.title}</h1>
+          <div className="mt-1 flex flex-wrap gap-2 text-xs text-ink-500">
             {category && <span>{categoryName(category, locale)}</span>}
             <span>· {video.originalLanguage}</span>
             {video.publishedAt && <span>· {new Date(video.publishedAt).toLocaleDateString()}</span>}
@@ -152,14 +152,14 @@ export default function VideoDetailPage() {
         <div className="flex gap-2">
           <button
             onClick={handleShare}
-            className="flex items-center gap-1.5 rounded-xl border border-surface-border px-3 py-2 text-sm text-white/80 hover:bg-surface-border"
+            className="flex items-center gap-1.5 rounded-xl border border-surface-border px-3 py-2 text-sm text-ink-700 hover:bg-surface-border"
           >
             <Share2 className="h-4 w-4" />
             {t("share")}
           </button>
           <button
             onClick={toggleFavorite}
-            className="flex items-center gap-1.5 rounded-xl border border-surface-border px-3 py-2 text-sm text-white/80 hover:bg-surface-border"
+            className="flex items-center gap-1.5 rounded-xl border border-surface-border px-3 py-2 text-sm text-ink-700 hover:bg-surface-border"
           >
             <Heart className={cn("h-4 w-4", isFavorited && "fill-red-400 text-red-400")} />
             {isFavorited ? t("favorited") : t("favorite")}
@@ -168,7 +168,7 @@ export default function VideoDetailPage() {
             <button
               onClick={handleDownloadToggle}
               disabled={downloadProgress !== null}
-              className="flex items-center gap-1.5 rounded-xl border border-surface-border px-3 py-2 text-sm text-white/80 hover:bg-surface-border disabled:opacity-60"
+              className="flex items-center gap-1.5 rounded-xl border border-surface-border px-3 py-2 text-sm text-ink-700 hover:bg-surface-border disabled:opacity-60"
             >
               {downloadProgress !== null ? (
                 <>
@@ -193,7 +193,7 @@ export default function VideoDetailPage() {
 
       {video.description && (
         <Card>
-          <p className="whitespace-pre-line text-sm text-white/80">{video.description}</p>
+          <p className="whitespace-pre-line text-sm text-ink-700">{video.description}</p>
         </Card>
       )}
     </div>

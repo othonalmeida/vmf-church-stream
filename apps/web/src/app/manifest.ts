@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Plataforma de streaming interna da igreja: vídeos, treinamentos, conteúdos e eventos.",
     start_url: "/",
     display: "standalone",
-    background_color: "#0b0c14",
-    theme_color: "#151434",
+    background_color: "#f8f9fa",
+    theme_color: "#18181b",
     icons: [
       {
         src: "/icons/icon.svg",

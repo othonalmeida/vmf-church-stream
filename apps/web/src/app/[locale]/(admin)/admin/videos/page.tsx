@@ -93,23 +93,23 @@ export default function AdminVideosPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-white">Vídeos</h1>
+        <h1 className="text-2xl font-semibold text-ink-950">Vídeos</h1>
         <Button onClick={() => setMetaModalVideo("new")}>
           <Plus className="h-4 w-4" />
           Novo vídeo
         </Button>
       </div>
 
-      {error && <p className="rounded-lg bg-red-900/30 px-4 py-2 text-sm text-red-300">{error}</p>}
+      {error && <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>}
       {!isLoading && categories.length === 0 && (
-        <p className="rounded-lg bg-amber-900/20 px-4 py-2 text-sm text-amber-300">
+        <p className="rounded-lg bg-amber-50 px-4 py-2 text-sm text-amber-700">
           Cadastre uma categoria do tipo "Vídeo" antes de criar vídeos.
         </p>
       )}
 
       <Card className="overflow-x-auto p-0">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-surface-border text-white/50">
+          <thead className="border-b border-surface-border text-ink-500">
             <tr>
               <th className="px-4 py-3 font-medium">Título</th>
               <th className="px-4 py-3 font-medium">Categoria</th>
@@ -121,15 +121,15 @@ export default function AdminVideosPage() {
           <tbody>
             {isLoading && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-white/50">
+                <td colSpan={5} className="px-4 py-6 text-center text-ink-500">
                   Carregando...
                 </td>
               </tr>
             )}
             {videos.map((video) => (
               <tr key={video.id} className="border-b border-surface-border/60">
-                <td className="px-4 py-3 text-white">{video.title}</td>
-                <td className="px-4 py-3 text-white/70">{categoryName(video.categoryId)}</td>
+                <td className="px-4 py-3 text-ink-950">{video.title}</td>
+                <td className="px-4 py-3 text-ink-600">{categoryName(video.categoryId)}</td>
                 <td className="px-4 py-3">
                   <Badge tone={video.status === "PUBLISHED" ? "success" : "neutral"}>{video.status}</Badge>
                 </td>
@@ -137,21 +137,21 @@ export default function AdminVideosPage() {
                   <Badge tone={TRANSCODE_TONE[video.transcodeStatus]}>{video.transcodeStatus}</Badge>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button onClick={() => setUploadModalVideo(video)} title="Enviar arquivo de vídeo" className="mr-2 rounded p-1.5 text-white/60 hover:bg-surface-border hover:text-white">
+                  <button onClick={() => setUploadModalVideo(video)} title="Enviar arquivo de vídeo" className="mr-2 rounded p-1.5 text-ink-600 hover:bg-surface-border hover:text-ink-950">
                     <Upload className="h-4 w-4" />
                   </button>
-                  <button onClick={() => setSubtitlesModalVideo(video)} title="Gerenciar legendas" className="mr-2 rounded p-1.5 text-white/60 hover:bg-surface-border hover:text-white">
+                  <button onClick={() => setSubtitlesModalVideo(video)} title="Gerenciar legendas" className="mr-2 rounded p-1.5 text-ink-600 hover:bg-surface-border hover:text-ink-950">
                     <Captions className="h-4 w-4" />
                   </button>
                   {video.transcodeStatus === "FAILED" && (
-                    <button onClick={() => handleReprocess(video)} title="Reprocessar" className="mr-2 rounded p-1.5 text-white/60 hover:bg-surface-border hover:text-white">
+                    <button onClick={() => handleReprocess(video)} title="Reprocessar" className="mr-2 rounded p-1.5 text-ink-600 hover:bg-surface-border hover:text-ink-950">
                       <RotateCw className="h-4 w-4" />
                     </button>
                   )}
-                  <button onClick={() => setMetaModalVideo(video)} title="Editar" className="mr-2 rounded p-1.5 text-white/60 hover:bg-surface-border hover:text-white">
+                  <button onClick={() => setMetaModalVideo(video)} title="Editar" className="mr-2 rounded p-1.5 text-ink-600 hover:bg-surface-border hover:text-ink-950">
                     <Pencil className="h-4 w-4" />
                   </button>
-                  <button onClick={() => handleDelete(video)} title="Excluir" className="rounded p-1.5 text-white/60 hover:bg-red-500/20 hover:text-red-300">
+                  <button onClick={() => handleDelete(video)} title="Excluir" className="rounded p-1.5 text-ink-600 hover:bg-red-100 hover:text-red-700">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </td>
@@ -316,7 +316,7 @@ function UploadModal({
   return (
     <Modal open={open} onClose={onClose} title={`Enviar arquivo: ${video.title}`}>
       <div className="flex flex-col gap-4">
-        <input ref={fileInputRef} type="file" accept="video/*" className="text-sm text-white/70" />
+        <input ref={fileInputRef} type="file" accept="video/*" className="text-sm text-ink-600" />
         {error && <p className="text-sm text-red-400">{error}</p>}
         {progress !== null && (
           <div className="h-2 w-full overflow-hidden rounded-full bg-surface-border">
@@ -387,11 +387,11 @@ function SubtitlesModal({
     <Modal open={open} onClose={onClose} title={`Legendas: ${video.title}`}>
       <div className="flex flex-col gap-4">
         <ul className="flex flex-col gap-2">
-          {video.subtitles.length === 0 && <li className="text-sm text-white/50">Nenhuma legenda enviada.</li>}
+          {video.subtitles.length === 0 && <li className="text-sm text-ink-500">Nenhuma legenda enviada.</li>}
           {video.subtitles.map((s) => (
-            <li key={s.id} className="flex items-center justify-between rounded-lg bg-surface-border/40 px-3 py-2 text-sm text-white">
+            <li key={s.id} className="flex items-center justify-between rounded-lg bg-surface-border/40 px-3 py-2 text-sm text-ink-950">
               {s.language}
-              <button onClick={() => handleDelete(s.id)} className="text-red-300 hover:underline">
+              <button onClick={() => handleDelete(s.id)} className="text-red-600 hover:underline">
                 Remover
               </button>
             </li>
@@ -406,7 +406,7 @@ function SubtitlesModal({
               </option>
             ))}
           </Select>
-          <input ref={fileInputRef} type="file" accept=".vtt,.srt" className="text-sm text-white/70" />
+          <input ref={fileInputRef} type="file" accept=".vtt,.srt" className="text-sm text-ink-600" />
           {error && <p className="text-sm text-red-400">{error}</p>}
           <Button onClick={handleUpload} isLoading={isUploading} className="self-end">
             Enviar legenda

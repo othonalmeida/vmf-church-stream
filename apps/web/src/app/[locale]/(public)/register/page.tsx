@@ -55,8 +55,8 @@ export default function RegisterPage() {
 
   return (
     <Card>
-      <h1 className="mb-1 text-2xl font-semibold text-white">{t("registerTitle")}</h1>
-      <p className="mb-6 text-sm text-white/60">{t("registerSubtitle")}</p>
+      <h1 className="mb-1 text-2xl font-semibold text-ink-950">{t("registerTitle")}</h1>
+      <p className="mb-6 text-sm text-ink-600">{t("registerSubtitle")}</p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Input label={t("name")} autoComplete="name" error={errors.name?.message} {...register("name")} />
@@ -89,9 +89,9 @@ export default function RegisterPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-white/60">
+      <p className="mt-6 text-center text-sm text-ink-600">
         {t("hasAccount")}{" "}
-        <Link href="/login" className="text-brand-300 hover:underline">
+        <Link href="/login" className="text-gold-700 hover:underline">
           {t("goToLogin")}
         </Link>
       </p>

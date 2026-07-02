@@ -45,16 +45,16 @@ export default function FavoritesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold text-white">{t("title")}</h1>
-      {error && <p className="rounded-lg bg-red-900/30 px-4 py-2 text-sm text-red-300">{error}</p>}
-      {favorites.length === 0 && !error && <p className="text-white/60">{t("empty")}</p>}
+      <h1 className="text-2xl font-semibold text-ink-950">{t("title")}</h1>
+      {error && <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>}
+      {favorites.length === 0 && !error && <p className="text-ink-600">{t("empty")}</p>}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {favorites.map((item) => (
           <Link key={item.id} href={`${TYPE_ROUTES[item.contentType]}/${item.contentId}`}>
-            <Card className="flex h-full flex-col gap-1 transition-colors hover:border-brand-500">
-              <span className="text-xs uppercase tracking-wide text-brand-300">{typeLabels[item.contentType]}</span>
-              <h3 className="font-medium text-white">{item.title}</h3>
+            <Card className="flex h-full flex-col gap-1 transition-colors hover:border-gold-500">
+              <span className="text-xs uppercase tracking-wide text-gold-700">{typeLabels[item.contentType]}</span>
+              <h3 className="font-medium text-ink-950">{item.title}</h3>
             </Card>
           </Link>
         ))}

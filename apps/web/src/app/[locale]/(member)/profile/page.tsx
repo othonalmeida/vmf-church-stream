@@ -62,13 +62,13 @@ export default function ProfilePage() {
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
-      <h1 className="text-2xl font-semibold text-white">{t("title")}</h1>
+      <h1 className="text-2xl font-semibold text-ink-950">{t("title")}</h1>
 
-      {message && <p className="rounded-lg bg-brand-900/40 px-4 py-2 text-sm text-brand-200">{message}</p>}
-      {error && <p className="rounded-lg bg-red-900/30 px-4 py-2 text-sm text-red-300">{error}</p>}
+      {message && <p className="rounded-lg bg-emerald-50 px-4 py-2 text-sm text-emerald-700">{message}</p>}
+      {error && <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>}
 
       <Card>
-        <h2 className="mb-4 text-lg font-medium text-white">{t("personalInfo")}</h2>
+        <h2 className="mb-4 text-lg font-medium text-ink-950">{t("personalInfo")}</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <Input label={tAuth("name")} {...register("name")} />
           <Input label={tAuth("email")} defaultValue={user.email} disabled />
@@ -86,7 +86,7 @@ export default function ProfilePage() {
       </Card>
 
       <Card>
-        <h2 className="mb-4 text-lg font-medium text-white">{t("changePassword")}</h2>
+        <h2 className="mb-4 text-lg font-medium text-ink-950">{t("changePassword")}</h2>
         <form onSubmit={handlePasswordSubmit(onPasswordSubmit)} className="flex flex-col gap-4">
           <Input label={tAuth("currentPassword")} type="password" {...registerPassword("currentPassword")} />
           <Input label={tAuth("newPassword")} type="password" {...registerPassword("newPassword")} />

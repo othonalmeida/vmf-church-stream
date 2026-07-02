@@ -41,10 +41,10 @@ export default function ResetPasswordPage() {
 
   return (
     <Card>
-      <h1 className="mb-6 text-2xl font-semibold text-white">{t("resetPasswordTitle")}</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-ink-950">{t("resetPasswordTitle")}</h1>
 
       {done ? (
-        <p className="text-sm text-brand-300">{t("resetPasswordSuccess")}</p>
+        <p className="text-sm text-gold-700">{t("resetPasswordSuccess")}</p>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <input type="hidden" {...register("token")} />
@@ -62,8 +62,8 @@ export default function ResetPasswordPage() {
         </form>
       )}
 
-      <p className="mt-6 text-center text-sm text-white/60">
-        <Link href="/login" className="text-brand-300 hover:underline">
+      <p className="mt-6 text-center text-sm text-ink-600">
+        <Link href="/login" className="text-gold-700 hover:underline">
           {t("goToLogin")}
         </Link>
       </p>

@@ -67,11 +67,11 @@ export default function SearchPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold text-white">{tCommon("search")}</h1>
+      <h1 className="text-2xl font-semibold text-ink-950">{tCommon("search")}</h1>
 
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[240px]">
-          <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
+          <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
           <Input placeholder={t("placeholder")} value={q} onChange={(e) => setQ(e.target.value)} className="pl-9" />
         </div>
         <Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="w-48">
@@ -85,19 +85,19 @@ export default function SearchPage() {
         <Checkbox label={t("offlineOnly")} checked={offlineOnly} onChange={(e) => setOfflineOnly(e.target.checked)} />
       </div>
 
-      {error && <p className="rounded-lg bg-red-900/30 px-4 py-2 text-sm text-red-300">{error}</p>}
+      {error && <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>}
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {results.map((item) => (
           <Link key={`${item.type}-${item.id}`} href={`${TYPE_ROUTES[item.type]}/${item.id}`}>
-            <Card className="flex h-full flex-col gap-1 transition-colors hover:border-brand-500">
-              <span className="text-xs uppercase tracking-wide text-brand-300">{typeLabels[item.type]}</span>
-              <h3 className="font-medium text-white">{item.title}</h3>
-              {item.description && <p className="line-clamp-2 text-sm text-white/60">{item.description}</p>}
+            <Card className="flex h-full flex-col gap-1 transition-colors hover:border-gold-500">
+              <span className="text-xs uppercase tracking-wide text-gold-700">{typeLabels[item.type]}</span>
+              <h3 className="font-medium text-ink-950">{item.title}</h3>
+              {item.description && <p className="line-clamp-2 text-sm text-ink-600">{item.description}</p>}
             </Card>
           </Link>
         ))}
-        {results.length === 0 && <p className="text-white/60">{t("empty")}</p>}
+        {results.length === 0 && <p className="text-ink-600">{t("empty")}</p>}
       </div>
     </div>
   );

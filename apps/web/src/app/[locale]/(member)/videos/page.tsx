@@ -45,12 +45,12 @@ export default function VideosPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold text-white">{t("title")}</h1>
+        <h1 className="text-2xl font-semibold text-ink-950">{t("title")}</h1>
         <div className="flex gap-2 overflow-x-auto">
           <button
             onClick={() => setCategoryId("")}
             className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${
-              categoryId === "" ? "bg-brand-600 text-white" : "bg-surface-raised text-white/60"
+              categoryId === "" ? "bg-ink-900 text-ink-950" : "bg-surface-raised text-ink-600 border border-surface-border"
             }`}
           >
             {t("all")}
@@ -60,7 +60,7 @@ export default function VideosPage() {
               key={c.id}
               onClick={() => setCategoryId(c.id)}
               className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${
-                categoryId === c.id ? "bg-brand-600 text-white" : "bg-surface-raised text-white/60"
+                categoryId === c.id ? "bg-ink-900 text-ink-950" : "bg-surface-raised text-ink-600 border border-surface-border"
               }`}
             >
               {categoryName(c, locale)}
@@ -69,9 +69,9 @@ export default function VideosPage() {
         </div>
       </div>
 
-      {error && <p className="rounded-lg bg-red-900/30 px-4 py-2 text-sm text-red-300">{error}</p>}
-      {isLoading && <p className="text-white/60">{t("loading")}</p>}
-      {!isLoading && videos.length === 0 && <p className="text-white/60">{t("empty")}</p>}
+      {error && <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>}
+      {isLoading && <p className="text-ink-600">{t("loading")}</p>}
+      {!isLoading && videos.length === 0 && <p className="text-ink-600">{t("empty")}</p>}
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {videos.map((video) => (

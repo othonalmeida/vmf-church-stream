@@ -40,8 +40,8 @@ export default function LoginPage() {
 
   return (
     <Card>
-      <h1 className="mb-1 text-2xl font-semibold text-white">{t("loginTitle")}</h1>
-      <p className="mb-6 text-sm text-white/60">{t("loginSubtitle")}</p>
+      <h1 className="mb-1 text-2xl font-semibold text-ink-950">{t("loginTitle")}</h1>
+      <p className="mb-6 text-sm text-ink-600">{t("loginSubtitle")}</p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Input
@@ -62,7 +62,7 @@ export default function LoginPage() {
         {formError && <p className="text-sm text-red-400">{formError}</p>}
 
         <div className="flex justify-end">
-          <Link href="/forgot-password" className="text-xs text-brand-300 hover:underline">
+          <Link href="/forgot-password" className="text-xs text-gold-700 hover:underline">
             {t("forgotPassword")}
           </Link>
         </div>
@@ -72,9 +72,9 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-white/60">
+      <p className="mt-6 text-center text-sm text-ink-600">
         {t("noAccount")}{" "}
-        <Link href="/register" className="text-brand-300 hover:underline">
+        <Link href="/register" className="text-gold-700 hover:underline">
           {t("goToRegister")}
         </Link>
       </p>

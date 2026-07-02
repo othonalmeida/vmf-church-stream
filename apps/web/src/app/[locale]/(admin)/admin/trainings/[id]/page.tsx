@@ -56,39 +56,39 @@ export default function AdminTrainingDetailPage() {
     await load();
   };
 
-  if (error) return <p className="rounded-lg bg-red-900/30 px-4 py-2 text-sm text-red-300">{error}</p>;
-  if (!training) return <p className="text-white/60">Carregando...</p>;
+  if (error) return <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>;
+  if (!training) return <p className="text-ink-600">Carregando...</p>;
 
   return (
     <div className="flex flex-col gap-6">
-      <Link href="/admin/trainings" className="flex items-center gap-1 text-sm text-white/60 hover:text-white">
+      <Link href="/admin/trainings" className="flex items-center gap-1 text-sm text-ink-600 hover:text-ink-950">
         <ArrowLeft className="h-4 w-4" />
         Voltar
       </Link>
 
-      <h1 className="text-2xl font-semibold text-white">{training.title}</h1>
+      <h1 className="text-2xl font-semibold text-ink-950">{training.title}</h1>
 
       {training.modules.map((module) => (
         <Card key={module.id}>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-medium text-white">{module.title}</h2>
-            <button onClick={() => deleteModule(module.id)} className="rounded p-1.5 text-white/60 hover:bg-red-500/20 hover:text-red-300">
+            <h2 className="font-medium text-ink-950">{module.title}</h2>
+            <button onClick={() => deleteModule(module.id)} className="rounded p-1.5 text-ink-600 hover:bg-red-100 hover:text-red-700">
               <Trash2 className="h-4 w-4" />
             </button>
           </div>
 
           <ul className="mb-3 flex flex-col gap-2">
             {module.lessons.map((lesson) => (
-              <li key={lesson.id} className="flex items-center justify-between rounded-lg bg-surface-border/40 px-3 py-2 text-sm text-white">
+              <li key={lesson.id} className="flex items-center justify-between rounded-lg bg-surface-border/40 px-3 py-2 text-sm text-ink-950">
                 <span>
                   [{lesson.contentType === "VIDEO" ? "Vídeo" : "Texto"}] {lesson.title}
                 </span>
-                <button onClick={() => deleteLesson(lesson.id)} className="text-red-300 hover:underline">
+                <button onClick={() => deleteLesson(lesson.id)} className="text-red-600 hover:underline">
                   Remover
                 </button>
               </li>
             ))}
-            {module.lessons.length === 0 && <li className="text-sm text-white/50">Nenhuma aula neste módulo.</li>}
+            {module.lessons.length === 0 && <li className="text-sm text-ink-500">Nenhuma aula neste módulo.</li>}
           </ul>
 
           <AddLessonForm moduleId={module.id} videos={videos} texts={texts} onAdded={load} />

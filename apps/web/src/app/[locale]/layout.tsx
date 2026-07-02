@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#151434",
+  themeColor: "#f8f9fa",
   width: "device-width",
   initialScale: 1,
 };
@@ -41,8 +41,8 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className="dark">
-      <body className="min-h-screen bg-surface font-sans antialiased">
+    <html lang={locale}>
+      <body className="min-h-screen bg-surface font-sans text-ink-950 antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <AuthProvider>{children}</AuthProvider>
         </NextIntlClientProvider>

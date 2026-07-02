@@ -6,8 +6,8 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       <div className="absolute right-4 top-4">
         <LocaleSwitcher />
       </div>
-      <div className="flex items-center gap-2 text-xl font-semibold text-white">
-        <span className="rounded-lg bg-brand-600 px-2 py-1 text-sm">VMF</span>
+      <div className="flex items-center gap-2 text-xl font-semibold text-ink-950">
+        <span className="rounded-lg bg-ink-900 px-2 py-1 text-sm text-ink-950">VMF</span>
         Church Stream
       </div>
       <div className="w-full max-w-md">{children}</div>

@@ -45,7 +45,7 @@ export default function AdminBannersPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-white">Banners</h1>
+        <h1 className="text-2xl font-semibold text-ink-950">Banners</h1>
         <Button
           onClick={() => {
             setEditing(null);
@@ -57,7 +57,7 @@ export default function AdminBannersPage() {
         </Button>
       </div>
 
-      {error && <p className="rounded-lg bg-red-900/30 px-4 py-2 text-sm text-red-300">{error}</p>}
+      {error && <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {banners.map((banner) => (
@@ -65,7 +65,7 @@ export default function AdminBannersPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={banner.imageUrl} alt={banner.title} className="h-32 w-full rounded-lg object-cover" />
             <div className="flex items-center justify-between">
-              <h3 className="font-medium text-white">{banner.title}</h3>
+              <h3 className="font-medium text-ink-950">{banner.title}</h3>
               <Badge tone={banner.status === "ACTIVE" ? "success" : "neutral"}>
                 {banner.status === "ACTIVE" ? "Ativo" : "Inativo"}
               </Badge>
@@ -76,17 +76,17 @@ export default function AdminBannersPage() {
                   setEditing(banner);
                   setModalOpen(true);
                 }}
-                className="rounded p-1.5 text-white/60 hover:bg-surface-border hover:text-white"
+                className="rounded p-1.5 text-ink-600 hover:bg-surface-border hover:text-ink-950"
               >
                 <Pencil className="h-4 w-4" />
               </button>
-              <button onClick={() => handleDelete(banner)} className="rounded p-1.5 text-white/60 hover:bg-red-500/20 hover:text-red-300">
+              <button onClick={() => handleDelete(banner)} className="rounded p-1.5 text-ink-600 hover:bg-red-100 hover:text-red-700">
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>
           </Card>
         ))}
-        {banners.length === 0 && <p className="text-white/60">Nenhum banner cadastrado.</p>}
+        {banners.length === 0 && <p className="text-ink-600">Nenhum banner cadastrado.</p>}
       </div>
 
       <BannerFormModal

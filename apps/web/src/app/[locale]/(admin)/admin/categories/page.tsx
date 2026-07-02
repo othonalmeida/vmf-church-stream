@@ -67,18 +67,18 @@ export default function AdminCategoriesPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-white">Categorias</h1>
+        <h1 className="text-2xl font-semibold text-ink-950">Categorias</h1>
         <Button onClick={openCreate}>
           <Plus className="h-4 w-4" />
           Nova categoria
         </Button>
       </div>
 
-      {error && <p className="rounded-lg bg-red-900/30 px-4 py-2 text-sm text-red-300">{error}</p>}
+      {error && <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>}
 
       <Card className="overflow-x-auto p-0">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-surface-border text-white/50">
+          <thead className="border-b border-surface-border text-ink-500">
             <tr>
               <th className="px-4 py-3 font-medium">Nome (PT)</th>
               <th className="px-4 py-3 font-medium">Tipo</th>
@@ -90,33 +90,33 @@ export default function AdminCategoriesPage() {
           <tbody>
             {isLoading && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-white/50">
+                <td colSpan={5} className="px-4 py-6 text-center text-ink-500">
                   Carregando...
                 </td>
               </tr>
             )}
             {!isLoading && categories.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-white/50">
+                <td colSpan={5} className="px-4 py-6 text-center text-ink-500">
                   Nenhuma categoria cadastrada.
                 </td>
               </tr>
             )}
             {categories.map((category) => (
               <tr key={category.id} className="border-b border-surface-border/60">
-                <td className="px-4 py-3 text-white">{category.namePt}</td>
-                <td className="px-4 py-3 text-white/70">{CONTENT_TYPE_LABELS[category.contentType]}</td>
-                <td className="px-4 py-3 text-white/70">{category.order}</td>
+                <td className="px-4 py-3 text-ink-950">{category.namePt}</td>
+                <td className="px-4 py-3 text-ink-600">{CONTENT_TYPE_LABELS[category.contentType]}</td>
+                <td className="px-4 py-3 text-ink-600">{category.order}</td>
                 <td className="px-4 py-3">
                   <Badge tone={category.status === "ACTIVE" ? "success" : "neutral"}>
                     {category.status === "ACTIVE" ? "Ativa" : "Inativa"}
                   </Badge>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button onClick={() => openEdit(category)} className="mr-2 rounded p-1.5 text-white/60 hover:bg-surface-border hover:text-white">
+                  <button onClick={() => openEdit(category)} className="mr-2 rounded p-1.5 text-ink-600 hover:bg-surface-border hover:text-ink-950">
                     <Pencil className="h-4 w-4" />
                   </button>
-                  <button onClick={() => handleDelete(category)} className="rounded p-1.5 text-white/60 hover:bg-red-500/20 hover:text-red-300">
+                  <button onClick={() => handleDelete(category)} className="rounded p-1.5 text-ink-600 hover:bg-red-100 hover:text-red-700">
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </td>

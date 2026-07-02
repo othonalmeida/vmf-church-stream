@@ -29,13 +29,13 @@ export default function DownloadsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold text-white">{t("title")}</h1>
-      <p className="flex items-center gap-1.5 text-xs text-white/50">
+      <h1 className="text-2xl font-semibold text-ink-950">{t("title")}</h1>
+      <p className="flex items-center gap-1.5 text-xs text-ink-500">
         <WifiOff className="h-3.5 w-3.5" />
         {t("subtitle")}
       </p>
 
-      {downloads.length === 0 && <p className="text-white/60">{t("empty")}</p>}
+      {downloads.length === 0 && <p className="text-ink-600">{t("empty")}</p>}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {downloads.map((d) => {
@@ -46,13 +46,13 @@ export default function DownloadsPage() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={thumb} alt={d.title} className="h-32 w-full rounded-lg object-cover" />
               )}
-              <Link href={`/videos/${d.videoId}`} className="font-medium text-white hover:underline">
+              <Link href={`/videos/${d.videoId}`} className="font-medium text-ink-950 hover:underline">
                 {d.title}
               </Link>
-              <span className="text-xs text-white/50">{(d.totalBytes / (1024 * 1024)).toFixed(1)} MB</span>
+              <span className="text-xs text-ink-500">{(d.totalBytes / (1024 * 1024)).toFixed(1)} MB</span>
               <button
                 onClick={() => handleRemove(d.videoId)}
-                className="mt-auto flex items-center gap-1.5 self-start rounded-lg border border-surface-border px-3 py-1.5 text-xs text-white/70 hover:bg-red-500/20 hover:text-red-300"
+                className="mt-auto flex items-center gap-1.5 self-start rounded-lg border border-surface-border px-3 py-1.5 text-xs text-ink-600 hover:bg-red-100 hover:text-red-700"
               >
                 <Trash2 className="h-3.5 w-3.5" />
                 {t("remove")}
