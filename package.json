@@ -1,0 +1,30 @@
+{
+  "name": "vmf-streaming",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Plataforma de streaming interna para igreja (video, treinamentos, conteudos e eventos)",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n API,WEB -c blue,green \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
+    "dev:api": "npm run dev -w apps/api",
+    "dev:web": "npm run dev -w apps/web",
+    "build": "npm run build -w packages/shared && npm run build -w apps/api && npm run build -w apps/web",
+    "typecheck": "npm run typecheck -w apps/api && npm run typecheck -w apps/web",
+    "prisma:generate": "npm run prisma:generate -w apps/api",
+    "prisma:migrate": "npm run prisma:migrate -w apps/api",
+    "prisma:seed": "npm run prisma:seed -w apps/api",
+    "lint": "npm run lint -w apps/api && npm run lint -w apps/web"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "typescript": "^5.7.2",
+    "eslint": "^9.17.0",
+    "prettier": "^3.4.2"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}

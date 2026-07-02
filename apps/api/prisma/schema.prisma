@@ -1,0 +1,378 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  // Pooler em modo transaction (porta 6543) — usado pela aplicacao em runtime.
+  url       = env("DATABASE_URL")
+  // Pooler em modo session (porta 5432) — usado apenas pelo Prisma Migrate,
+  // que precisa de prepared statements (nao suportados no modo transaction).
+  directUrl = env("DIRECT_URL")
+}
+
+// ---------- Enums ----------
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum Locale {
+  pt_BR
+  en_US
+  es_ES
+}
+
+enum ContentType {
+  VIDEO
+  TEXT
+  TRAINING
+  EVENT
+}
+
+enum PublishStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum TranscodeStatus {
+  PENDING
+  PROCESSING
+  READY
+  FAILED
+}
+
+enum DownloadStatus {
+  REQUESTED
+  DOWNLOADED
+  REMOVED
+  EXPIRED
+}
+
+enum LessonContentType {
+  VIDEO
+  TEXT
+}
+
+enum FavoritableType {
+  VIDEO
+  TEXT
+  TRAINING
+  EVENT
+}
+
+// ---------- Core ----------
+
+model User {
+  id               String     @id @default(uuid())
+  name             String
+  email            String     @unique
+  passwordHash     String
+  preferredLocale  Locale     @default(pt_BR)
+  role             Role       @default(MEMBER)
+  status           UserStatus @default(ACTIVE)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  refreshTokens        RefreshToken[]
+  passwordResetTokens  PasswordResetToken[]
+  createdVideos        Video[]        @relation("VideoCreatedBy")
+  createdTextContents  TextContent[]  @relation("TextContentCreatedBy")
+  createdTrainings     Training[]     @relation("TrainingCreatedBy")
+  createdEvents        Event[]        @relation("EventCreatedBy")
+  favorites            Favorite[]
+  viewHistory          ViewHistory[]
+  offlineDownloads     OfflineDownload[]
+  lessonProgress       TrainingProgress[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model PasswordResetToken {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+// ---------- Categories ----------
+
+model Category {
+  id           String        @id @default(uuid())
+  namePt       String
+  nameEn       String
+  nameEs       String
+  description  String?
+  contentType  ContentType
+  order        Int           @default(0)
+  status       UserStatus    @default(ACTIVE)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  videos        Video[]
+  textContents  TextContent[]
+  trainings     Training[]
+  events        Event[]
+
+  @@map("categories")
+}
+
+// ---------- Videos ----------
+
+model Video {
+  id                String           @id @default(uuid())
+  title             String
+  description       String?
+  categoryId        String
+  category          Category         @relation(fields: [categoryId], references: [id])
+  thumbnailUrl      String?
+  sourceFilePath    String?
+  hlsPlaylistUrl    String?
+  duration          Int?
+  originalLanguage  Locale
+  allowDownload     Boolean          @default(false)
+  status            PublishStatus    @default(DRAFT)
+  featured          Boolean          @default(false)
+  order             Int              @default(0)
+  publishedAt       DateTime?
+  transcodeStatus   TranscodeStatus  @default(PENDING)
+  transcodeError    String?
+  createdById       String
+  createdBy         User             @relation("VideoCreatedBy", fields: [createdById], references: [id])
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  subtitles         Subtitle[]
+  trainingLessons   TrainingLesson[]
+  viewHistory       ViewHistory[]
+  offlineDownloads  OfflineDownload[]
+
+  @@index([categoryId])
+  @@index([status])
+  @@map("videos")
+}
+
+model Subtitle {
+  id        String     @id @default(uuid())
+  videoId   String
+  video     Video      @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  language  Locale
+  fileUrl   String
+  status    UserStatus @default(ACTIVE)
+  createdAt DateTime   @default(now())
+
+  @@unique([videoId, language])
+  @@map("subtitles")
+}
+
+// ---------- Text contents ----------
+
+model TextContent {
+  id            String        @id @default(uuid())
+  title         String
+  description   String?
+  contentHtml   String
+  categoryId    String
+  category      Category      @relation(fields: [categoryId], references: [id])
+  language      Locale
+  imageUrl      String?
+  status        PublishStatus @default(DRAFT)
+  featured      Boolean       @default(false)
+  publishedAt   DateTime?
+  createdById   String
+  createdBy     User          @relation("TextContentCreatedBy", fields: [createdById], references: [id])
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  trainingLessons TrainingLesson[]
+
+  @@index([categoryId])
+  @@index([status])
+  @@map("text_contents")
+}
+
+// ---------- Trainings ----------
+
+model Training {
+  id           String        @id @default(uuid())
+  title        String
+  description  String?
+  categoryId   String
+  category     Category      @relation(fields: [categoryId], references: [id])
+  imageUrl     String?
+  status       PublishStatus @default(DRAFT)
+  featured     Boolean       @default(false)
+  order        Int           @default(0)
+  createdById  String
+  createdBy    User          @relation("TrainingCreatedBy", fields: [createdById], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  modules  TrainingModule[]
+
+  @@index([categoryId])
+  @@map("trainings")
+}
+
+model TrainingModule {
+  id          String   @id @default(uuid())
+  trainingId  String
+  training    Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  order       Int      @default(0)
+
+  lessons TrainingLesson[]
+
+  @@index([trainingId])
+  @@map("training_modules")
+}
+
+model TrainingLesson {
+  id             String            @id @default(uuid())
+  moduleId       String
+  module         TrainingModule    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  contentType    LessonContentType
+  videoId        String?
+  video          Video?            @relation(fields: [videoId], references: [id])
+  textContentId  String?
+  textContent    TextContent?      @relation(fields: [textContentId], references: [id])
+  title          String
+  description    String?
+  order          Int               @default(0)
+  required       Boolean           @default(true)
+
+  progress TrainingProgress[]
+
+  @@index([moduleId])
+  @@map("training_lessons")
+}
+
+model TrainingProgress {
+  id           String     @id @default(uuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId     String
+  lesson       TrainingLesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  completed    Boolean    @default(false)
+  completedAt  DateTime?
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([userId, lessonId])
+  @@map("training_progress")
+}
+
+// ---------- Events ----------
+
+model Event {
+  id           String        @id @default(uuid())
+  title        String
+  description  String?
+  startDate    DateTime
+  endDate      DateTime?
+  location     String?
+  imageUrl     String?
+  categoryId   String?
+  category     Category?     @relation(fields: [categoryId], references: [id])
+  language     Locale
+  status       PublishStatus @default(DRAFT)
+  createdById  String
+  createdBy    User          @relation("EventCreatedBy", fields: [createdById], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([startDate])
+  @@index([categoryId])
+  @@map("events")
+}
+
+// ---------- Engagement ----------
+
+model Favorite {
+  id           String          @id @default(uuid())
+  userId       String
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contentType  FavoritableType
+  contentId    String
+  createdAt    DateTime        @default(now())
+
+  @@unique([userId, contentType, contentId])
+  @@index([userId])
+  @@map("favorites")
+}
+
+model ViewHistory {
+  id                String   @id @default(uuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  videoId           String
+  video             Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  watchedSeconds    Int      @default(0)
+  percentualWatched Float    @default(0)
+  completed         Boolean  @default(false)
+  lastViewedAt      DateTime @default(now())
+
+  @@unique([userId, videoId])
+  @@index([userId])
+  @@map("view_history")
+}
+
+model OfflineDownload {
+  id            String         @id @default(uuid())
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  videoId       String
+  video         Video          @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  status        DownloadStatus @default(REQUESTED)
+  deviceId      String
+  downloadedAt  DateTime?
+  expiresAt     DateTime?
+  createdAt     DateTime       @default(now())
+
+  @@unique([userId, videoId, deviceId])
+  @@index([userId])
+  @@map("offline_downloads")
+}
+
+// ---------- Banners ----------
+
+model Banner {
+  id         String     @id @default(uuid())
+  title      String
+  subtitle   String?
+  imageUrl   String
+  linkUrl    String?
+  order      Int        @default(0)
+  status     UserStatus @default(ACTIVE)
+  startsAt   DateTime?
+  endsAt     DateTime?
+  createdAt  DateTime   @default(now())
+
+  @@map("banners")
+}

@@ -1,0 +1,17 @@
+node_modules/
+.claude/settings.local.json
+dist/
+build/
+.next/
+.turbo/
+*.log
+.env
+.env.local
+.env.*.local
+apps/api/uploads/**
+!apps/api/uploads/**/.gitkeep
+apps/web/public/sw.js
+apps/web/public/sw.js.map
+apps/web/public/swe-worker*.js
+.DS_Store
+Thumbs.db

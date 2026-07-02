@@ -1,0 +1,142 @@
+{
+  "common": {
+    "appName": "VMF Church Stream",
+    "loading": "Carregando...",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "search": "Buscar",
+    "seeAll": "Ver tudo",
+    "back": "Voltar",
+    "error": "Ocorreu um erro. Tente novamente.",
+    "required": "Campo obrigatório",
+    "language": "Idioma"
+  },
+  "nav": {
+    "home": "Home",
+    "videos": "Vídeos",
+    "trainings": "Treinamentos",
+    "content": "Conteúdos",
+    "events": "Eventos",
+    "downloads": "Downloads",
+    "favorites": "Favoritos",
+    "profile": "Perfil",
+    "admin": "Painel Admin",
+    "logout": "Sair"
+  },
+  "adminNav": {
+    "dashboard": "Dashboard",
+    "users": "Usuários",
+    "categories": "Categorias",
+    "videos": "Vídeos",
+    "subtitles": "Legendas",
+    "content": "Conteúdos",
+    "trainings": "Treinamentos",
+    "events": "Eventos",
+    "banners": "Banners",
+    "reports": "Relatórios",
+    "settings": "Configurações"
+  },
+  "auth": {
+    "loginTitle": "Entrar na plataforma",
+    "loginSubtitle": "Acesse conteúdos, treinamentos e eventos da igreja",
+    "registerTitle": "Criar conta",
+    "registerSubtitle": "Cadastre-se para acessar a plataforma",
+    "name": "Nome completo",
+    "email": "E-mail",
+    "password": "Senha",
+    "confirmPassword": "Confirmar senha",
+    "currentPassword": "Senha atual",
+    "newPassword": "Nova senha",
+    "forgotPassword": "Esqueceu a senha?",
+    "forgotPasswordTitle": "Recuperar senha",
+    "forgotPasswordSubtitle": "Informe seu e-mail para receber o link de redefinição",
+    "resetPasswordTitle": "Redefinir senha",
+    "sendResetLink": "Enviar link de recuperação",
+    "resetLinkSent": "Se o e-mail existir, um link de recuperação foi enviado.",
+    "resetPasswordSuccess": "Senha redefinida com sucesso. Faça login novamente.",
+    "submitLogin": "Entrar",
+    "submitRegister": "Criar conta",
+    "submitReset": "Redefinir senha",
+    "noAccount": "Ainda não tem conta?",
+    "hasAccount": "Já tem conta?",
+    "goToRegister": "Cadastre-se",
+    "goToLogin": "Entrar",
+    "invalidCredentials": "E-mail ou senha inválidos",
+    "emailInUse": "Este e-mail já está cadastrado"
+  },
+  "profile": {
+    "title": "Meu perfil",
+    "personalInfo": "Informações pessoais",
+    "changePassword": "Alterar senha",
+    "preferredLanguage": "Idioma preferido",
+    "saveSuccess": "Perfil atualizado com sucesso"
+  },
+  "home": {
+    "welcome": "Bem-vindo(a)",
+    "continueWatching": "Continuar assistindo",
+    "featured": "Em destaque",
+    "categories": "Categorias",
+    "recentTrainings": "Treinamentos recentes",
+    "upcomingEvents": "Próximos eventos",
+    "recommended": "Recomendados"
+  },
+  "videos": {
+    "title": "Vídeos",
+    "all": "Todos",
+    "empty": "Nenhum vídeo publicado ainda.",
+    "loading": "Carregando...",
+    "processing": "Processando",
+    "failed": "Falhou",
+    "processingMessage": "Este vídeo ainda está sendo processado. Volte em alguns minutos.",
+    "failedMessage": "Falha ao processar este vídeo. Contate um administrador.",
+    "share": "Compartilhar",
+    "favorite": "Favoritar",
+    "favorited": "Favoritado",
+    "download": "Baixar",
+    "downloaded": "Baixado",
+    "linkCopied": "Link copiado para a área de transferência.",
+    "removeDownloadConfirm": "Remover este vídeo dos downloads offline?"
+  },
+  "trainings": {
+    "title": "Treinamentos",
+    "empty": "Nenhum treinamento publicado ainda.",
+    "percentComplete": "concluído",
+    "markComplete": "Marcar como concluída",
+    "completed": "Concluída",
+    "selectLesson": "Selecione uma aula na lista ao lado.",
+    "openReading": "Abrir material de leitura",
+    "noLessons": "Nenhuma aula cadastrada ainda.",
+    "videoProcessing": "Vídeo em processamento."
+  },
+  "texts": {
+    "title": "Conteúdos",
+    "empty": "Nenhum conteúdo publicado ainda."
+  },
+  "events": {
+    "title": "Eventos",
+    "month": "Mês",
+    "week": "Semana",
+    "list": "Lista",
+    "empty": "Nenhum evento encontrado."
+  },
+  "search": {
+    "placeholder": "Buscar vídeos, treinamentos, conteúdos e eventos...",
+    "allCategories": "Todas as categorias",
+    "offlineOnly": "Disponível offline",
+    "empty": "Nenhum resultado encontrado.",
+    "typeVideo": "Vídeo",
+    "typeTraining": "Treinamento",
+    "typeText": "Conteúdo",
+    "typeEvent": "Evento"
+  },
+  "favorites": {
+    "title": "Favoritos",
+    "empty": "Você ainda não favoritou nenhum conteúdo."
+  },
+  "downloads": {
+    "title": "Downloads",
+    "subtitle": "Vídeos baixados neste dispositivo ficam disponíveis mesmo sem internet.",
+    "empty": "Nenhum vídeo baixado neste dispositivo.",
+    "remove": "Remover download"
+  }
+}

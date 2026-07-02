@@ -1,0 +1,41 @@
+{
+  "name": "@vmf/web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.worker.json",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@vmf/shared": "*",
+    "@hookform/resolvers": "^3.9.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "hls.js": "^1.5.18",
+    "idb": "^8.0.0",
+    "lucide-react": "^0.468.0",
+    "next": "^15.5.20",
+    "next-intl": "^4.13.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-hook-form": "^7.54.1",
+    "serwist": "^9.0.11",
+    "tailwind-merge": "^2.5.5",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@serwist/next": "^9.0.11",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.1",
+    "@types/react-dom": "^19.0.2",
+    "@tailwindcss/typography": "^0.5.15",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2"
+  }
+}

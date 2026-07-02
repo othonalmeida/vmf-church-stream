@@ -1,0 +1,142 @@
+{
+  "common": {
+    "appName": "VMF Church Stream",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "search": "Search",
+    "seeAll": "See all",
+    "back": "Back",
+    "error": "Something went wrong. Please try again.",
+    "required": "Required field",
+    "language": "Language"
+  },
+  "nav": {
+    "home": "Home",
+    "videos": "Videos",
+    "trainings": "Trainings",
+    "content": "Content",
+    "events": "Events",
+    "downloads": "Downloads",
+    "favorites": "Favorites",
+    "profile": "Profile",
+    "admin": "Admin Panel",
+    "logout": "Log out"
+  },
+  "adminNav": {
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "categories": "Categories",
+    "videos": "Videos",
+    "subtitles": "Subtitles",
+    "content": "Content",
+    "trainings": "Trainings",
+    "events": "Events",
+    "banners": "Banners",
+    "reports": "Reports",
+    "settings": "Settings"
+  },
+  "auth": {
+    "loginTitle": "Sign in to the platform",
+    "loginSubtitle": "Access church content, trainings and events",
+    "registerTitle": "Create account",
+    "registerSubtitle": "Sign up to access the platform",
+    "name": "Full name",
+    "email": "E-mail",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "forgotPassword": "Forgot your password?",
+    "forgotPasswordTitle": "Recover password",
+    "forgotPasswordSubtitle": "Enter your e-mail to receive a reset link",
+    "resetPasswordTitle": "Reset password",
+    "sendResetLink": "Send reset link",
+    "resetLinkSent": "If the e-mail exists, a reset link was sent.",
+    "resetPasswordSuccess": "Password reset successfully. Please log in again.",
+    "submitLogin": "Sign in",
+    "submitRegister": "Create account",
+    "submitReset": "Reset password",
+    "noAccount": "Don't have an account yet?",
+    "hasAccount": "Already have an account?",
+    "goToRegister": "Sign up",
+    "goToLogin": "Sign in",
+    "invalidCredentials": "Invalid e-mail or password",
+    "emailInUse": "This e-mail is already registered"
+  },
+  "profile": {
+    "title": "My profile",
+    "personalInfo": "Personal information",
+    "changePassword": "Change password",
+    "preferredLanguage": "Preferred language",
+    "saveSuccess": "Profile updated successfully"
+  },
+  "home": {
+    "welcome": "Welcome",
+    "continueWatching": "Continue watching",
+    "featured": "Featured",
+    "categories": "Categories",
+    "recentTrainings": "Recent trainings",
+    "upcomingEvents": "Upcoming events",
+    "recommended": "Recommended"
+  },
+  "videos": {
+    "title": "Videos",
+    "all": "All",
+    "empty": "No videos published yet.",
+    "loading": "Loading...",
+    "processing": "Processing",
+    "failed": "Failed",
+    "processingMessage": "This video is still being processed. Check back in a few minutes.",
+    "failedMessage": "Failed to process this video. Contact an administrator.",
+    "share": "Share",
+    "favorite": "Favorite",
+    "favorited": "Favorited",
+    "download": "Download",
+    "downloaded": "Downloaded",
+    "linkCopied": "Link copied to clipboard.",
+    "removeDownloadConfirm": "Remove this video from offline downloads?"
+  },
+  "trainings": {
+    "title": "Trainings",
+    "empty": "No trainings published yet.",
+    "percentComplete": "complete",
+    "markComplete": "Mark as complete",
+    "completed": "Completed",
+    "selectLesson": "Select a lesson from the list.",
+    "openReading": "Open reading material",
+    "noLessons": "No lessons added yet.",
+    "videoProcessing": "Video is processing."
+  },
+  "texts": {
+    "title": "Content",
+    "empty": "No content published yet."
+  },
+  "events": {
+    "title": "Events",
+    "month": "Month",
+    "week": "Week",
+    "list": "List",
+    "empty": "No events found."
+  },
+  "search": {
+    "placeholder": "Search videos, trainings, content and events...",
+    "allCategories": "All categories",
+    "offlineOnly": "Available offline",
+    "empty": "No results found.",
+    "typeVideo": "Video",
+    "typeTraining": "Training",
+    "typeText": "Content",
+    "typeEvent": "Event"
+  },
+  "favorites": {
+    "title": "Favorites",
+    "empty": "You haven't favorited any content yet."
+  },
+  "downloads": {
+    "title": "Downloads",
+    "subtitle": "Videos downloaded on this device remain available even without internet.",
+    "empty": "No videos downloaded on this device.",
+    "remove": "Remove download"
+  }
+}
