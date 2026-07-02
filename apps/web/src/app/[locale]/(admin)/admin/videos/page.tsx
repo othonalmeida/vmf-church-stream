@@ -295,7 +295,10 @@ function UploadModal({
   const handleUpload = async () => {
     if (!video) return;
     const file = fileInputRef.current?.files?.[0];
-    if (!file) return;
+    if (!file) {
+      setError("Selecione um arquivo de vídeo antes de enviar.");
+      return;
+    }
 
     setError(null);
     setProgress(0);
@@ -317,7 +320,7 @@ function UploadModal({
     <Modal open={open} onClose={onClose} title={`Enviar arquivo: ${video.title}`}>
       <div className="flex flex-col gap-4">
         <input ref={fileInputRef} type="file" accept="video/*" className="text-sm text-ink-600" />
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && <p className="text-sm text-red-600">{error}</p>}
         {progress !== null && (
           <div className="h-2 w-full overflow-hidden rounded-full bg-surface-border">
             <div className="h-full bg-brand-600 transition-all" style={{ width: `${progress}%` }} />
@@ -351,7 +354,14 @@ function SubtitlesModal({
     if (!video) return;
     const file = fileInputRef.current?.files?.[0];
     const language = languageRef.current?.value;
-    if (!file || !language) return;
+    if (!file) {
+      setError("Selecione um arquivo .vtt ou .srt antes de enviar.");
+      return;
+    }
+    if (!language) {
+      setError("Selecione o idioma da legenda.");
+      return;
+    }
 
     setError(null);
     setIsUploading(true);
@@ -407,7 +417,7 @@ function SubtitlesModal({
             ))}
           </Select>
           <input ref={fileInputRef} type="file" accept=".vtt,.srt" className="text-sm text-ink-600" />
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && <p className="text-sm text-red-600">{error}</p>}
           <Button onClick={handleUpload} isLoading={isUploading} className="self-end">
             Enviar legenda
           </Button>

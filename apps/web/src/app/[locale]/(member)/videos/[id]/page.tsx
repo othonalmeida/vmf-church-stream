@@ -163,7 +163,7 @@ export default function VideoDetailPage() {
             title={isFavorited ? t("favorited") : t("favorite")}
             className="flex items-center gap-1.5 rounded-xl border border-surface-border px-2.5 py-2 text-sm text-ink-700 hover:bg-surface-border sm:px-3"
           >
-            <Heart className={cn("h-4 w-4", isFavorited && "fill-red-400 text-red-400")} />
+            <Heart className={cn("h-4 w-4", isFavorited && "fill-red-500 text-red-500")} />
             <span className="hidden sm:inline">{isFavorited ? t("favorited") : t("favorite")}</span>
           </button>
           {video.allowDownload && (

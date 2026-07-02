@@ -55,7 +55,7 @@ export default function ResetPasswordPage() {
             error={errors.password?.message}
             {...register("password")}
           />
-          {formError && <p className="text-sm text-red-400">{formError}</p>}
+          {formError && <p className="text-sm text-red-600">{formError}</p>}
           <Button type="submit" isLoading={isSubmitting} className="w-full">
             {t("submitReset")}
           </Button>

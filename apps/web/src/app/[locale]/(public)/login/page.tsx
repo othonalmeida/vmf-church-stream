@@ -59,7 +59,7 @@ export default function LoginPage() {
           {...register("password")}
         />
 
-        {formError && <p className="text-sm text-red-400">{formError}</p>}
+        {formError && <p className="text-sm text-red-600">{formError}</p>}
 
         <div className="flex justify-end">
           <Link href="/forgot-password" className="text-xs text-gold-700 hover:underline">
