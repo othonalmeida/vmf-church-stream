@@ -6,6 +6,7 @@ export const registerSchema = z.object({
   email: z.string().trim().toLowerCase().email(),
   password: z.string().min(8).max(128),
   preferredLocale: localeSchema.optional(),
+  churchId: z.number().int(),
 });
 export type RegisterInput = z.infer<typeof registerSchema>;
 
@@ -40,5 +41,14 @@ export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export const authTokensSchema = z.object({
   accessToken: z.string(),
   expiresIn: z.number(),
+  // So presente quando o cliente envia o header "X-Client: mobile" - apps
+  // nativos nao tem cookie jar de navegador, entao o refresh token viaja no
+  // corpo em vez de (ou alem de) um cookie httpOnly.
+  refreshToken: z.string().optional(),
 });
 export type AuthTokens = z.infer<typeof authTokensSchema>;
+
+export const refreshRequestSchema = z.object({
+  refreshToken: z.string().min(10).optional(),
+});
+export type RefreshRequestInput = z.infer<typeof refreshRequestSchema>;

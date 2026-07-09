@@ -78,6 +78,8 @@ model User {
   preferredLocale  Locale     @default(pt_BR)
   role             Role       @default(MEMBER)
   status           UserStatus @default(ACTIVE)
+  churchId         Int
+  church           Church     @relation(fields: [churchId], references: [id])
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 
@@ -92,7 +94,24 @@ model User {
   offlineDownloads     OfflineDownload[]
   lessonProgress       TrainingProgress[]
 
+  @@index([churchId])
   @@map("users")
+}
+
+model Church {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+
+  users        User[]
+  categories   Category[]
+  videos       Video[]
+  textContents TextContent[]
+  trainings    Training[]
+  events       Event[]
+  banners      Banner[]
+
+  @@map("churches")
 }
 
 model RefreshToken {
@@ -132,6 +151,8 @@ model Category {
   contentType  ContentType
   order        Int           @default(0)
   status       UserStatus    @default(ACTIVE)
+  churchId     Int
+  church       Church        @relation(fields: [churchId], references: [id])
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
@@ -140,6 +161,7 @@ model Category {
   trainings     Training[]
   events        Event[]
 
+  @@index([churchId])
   @@map("categories")
 }
 
@@ -165,6 +187,8 @@ model Video {
   transcodeError    String?
   createdById       String
   createdBy         User             @relation("VideoCreatedBy", fields: [createdById], references: [id])
+  churchId          Int
+  church            Church           @relation(fields: [churchId], references: [id])
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
 
@@ -174,6 +198,7 @@ model Video {
   offlineDownloads  OfflineDownload[]
 
   @@index([categoryId])
+  @@index([churchId])
   @@index([status])
   @@map("videos")
 }
@@ -207,6 +232,8 @@ model TextContent {
   publishedAt   DateTime?
   createdById   String
   createdBy     User          @relation("TextContentCreatedBy", fields: [createdById], references: [id])
+  churchId      Int
+  church        Church        @relation(fields: [churchId], references: [id])
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
@@ -214,6 +241,7 @@ model TextContent {
 
   @@index([categoryId])
   @@index([status])
+  @@index([churchId])
   @@map("text_contents")
 }
 
@@ -231,12 +259,15 @@ model Training {
   order        Int           @default(0)
   createdById  String
   createdBy    User          @relation("TrainingCreatedBy", fields: [createdById], references: [id])
+  churchId     Int
+  church       Church        @relation(fields: [churchId], references: [id])
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
   modules  TrainingModule[]
 
   @@index([categoryId])
+  @@index([churchId])
   @@map("trainings")
 }
 
@@ -304,11 +335,14 @@ model Event {
   status       PublishStatus @default(DRAFT)
   createdById  String
   createdBy    User          @relation("EventCreatedBy", fields: [createdById], references: [id])
+  churchId     Int
+  church       Church        @relation(fields: [churchId], references: [id])
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
   @@index([startDate])
   @@index([categoryId])
+  @@index([churchId])
   @@map("events")
 }
 
@@ -372,7 +406,10 @@ model Banner {
   status     UserStatus @default(ACTIVE)
   startsAt   DateTime?
   endsAt     DateTime?
+  churchId   Int
+  church     Church     @relation(fields: [churchId], references: [id])
   createdAt  DateTime   @default(now())
 
+  @@index([churchId])
   @@map("banners")
 }

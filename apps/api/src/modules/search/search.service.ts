@@ -19,7 +19,7 @@ interface SearchFilters {
   offlineOnly?: boolean;
 }
 
-export async function globalSearch(filters: SearchFilters): Promise<SearchResultItem[]> {
+export async function globalSearch(churchId: number, filters: SearchFilters): Promise<SearchResultItem[]> {
   const q = filters.q?.trim();
   const wantsType = (type: SearchResultItem["type"]) => !filters.types || filters.types.includes(type);
   const language = filters.language ? toPrismaLocale(filters.language) : undefined;
@@ -29,6 +29,7 @@ export async function globalSearch(filters: SearchFilters): Promise<SearchResult
   if (wantsType("VIDEO")) {
     const videos = await prisma.video.findMany({
       where: {
+        churchId,
         status: "PUBLISHED",
         ...(q ? { title: { contains: q, mode: "insensitive" } } : {}),
         ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
@@ -52,6 +53,7 @@ export async function globalSearch(filters: SearchFilters): Promise<SearchResult
   if (wantsType("TRAINING") && !filters.offlineOnly) {
     const trainings = await prisma.training.findMany({
       where: {
+        churchId,
         status: "PUBLISHED",
         ...(q ? { title: { contains: q, mode: "insensitive" } } : {}),
         ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
@@ -73,6 +75,7 @@ export async function globalSearch(filters: SearchFilters): Promise<SearchResult
   if (wantsType("TEXT") && !filters.offlineOnly) {
     const texts = await prisma.textContent.findMany({
       where: {
+        churchId,
         status: "PUBLISHED",
         ...(q ? { title: { contains: q, mode: "insensitive" } } : {}),
         ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
@@ -95,6 +98,7 @@ export async function globalSearch(filters: SearchFilters): Promise<SearchResult
   if (wantsType("EVENT") && !filters.offlineOnly) {
     const events = await prisma.event.findMany({
       where: {
+        churchId,
         status: "PUBLISHED",
         ...(q ? { title: { contains: q, mode: "insensitive" } } : {}),
         ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),

@@ -4,6 +4,17 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
+  const saoPaulo = await prisma.church.upsert({
+    where: { id: 1 },
+    update: {},
+    create: { name: "São Paulo" },
+  });
+  await prisma.church.upsert({
+    where: { id: 2 },
+    update: {},
+    create: { name: "Osasco" },
+  });
+
   const adminEmail = process.env.SEED_ADMIN_EMAIL || "admin@igreja.local";
   const adminPassword = process.env.SEED_ADMIN_PASSWORD || "TrocarSenha123!";
   const memberEmail = process.env.SEED_MEMBER_EMAIL || "membro@igreja.local";
@@ -22,6 +33,7 @@ async function main() {
       role: "ADMIN",
       status: "ACTIVE",
       preferredLocale: "pt_BR",
+      churchId: saoPaulo.id,
     },
   });
 
@@ -35,6 +47,7 @@ async function main() {
       role: "MEMBER",
       status: "ACTIVE",
       preferredLocale: "pt_BR",
+      churchId: saoPaulo.id,
     },
   });
 
@@ -53,14 +66,17 @@ async function main() {
 
   const categories: Record<string, string> = {};
   for (const def of categoryDefs) {
-    const existing = await prisma.category.findFirst({ where: { namePt: def.namePt } });
-    const category = existing ?? (await prisma.category.create({ data: { ...def, status: "ACTIVE" } }));
+    const existing = await prisma.category.findFirst({ where: { namePt: def.namePt, churchId: saoPaulo.id } });
+    const category =
+      existing ?? (await prisma.category.create({ data: { ...def, status: "ACTIVE", churchId: saoPaulo.id } }));
     categories[def.namePt] = category.id;
   }
 
   const textCategoryId = categories["Comunicados"];
   if (textCategoryId) {
-    const existingText = await prisma.textContent.findFirst({ where: { title: "Bem-vindo à plataforma" } });
+    const existingText = await prisma.textContent.findFirst({
+      where: { title: "Bem-vindo à plataforma", churchId: saoPaulo.id },
+    });
     if (!existingText) {
       await prisma.textContent.create({
         data: {
@@ -74,6 +90,7 @@ async function main() {
           featured: true,
           publishedAt: new Date(),
           createdById: admin.id,
+          churchId: saoPaulo.id,
         },
       });
     }
@@ -81,7 +98,9 @@ async function main() {
 
   const eventCategoryId = categories["Jovens"];
   if (eventCategoryId) {
-    const existingEvent = await prisma.event.findFirst({ where: { title: "Encontro de Jovens" } });
+    const existingEvent = await prisma.event.findFirst({
+      where: { title: "Encontro de Jovens", churchId: saoPaulo.id },
+    });
     if (!existingEvent) {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() + 7);
@@ -95,12 +114,14 @@ async function main() {
           language: "pt_BR",
           status: "PUBLISHED",
           createdById: admin.id,
+          churchId: saoPaulo.id,
         },
       });
     }
   }
 
   console.log("Seed concluido.");
+  console.log(`Igrejas: São Paulo (id ${saoPaulo.id}), Osasco`);
   console.log(`Admin: ${adminEmail} / senha inicial: ${adminPassword}`);
   console.log(`Membro: ${memberEmail} / senha inicial: ${memberPassword}`);
 }

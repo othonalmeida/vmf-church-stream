@@ -31,6 +31,7 @@ function toUserDTO(user: {
   role: "ADMIN" | "MEMBER";
   status: "ACTIVE" | "INACTIVE";
   preferredLocale: "pt_BR" | "en_US" | "es_ES";
+  churchId: number;
   createdAt: Date;
 }): UserDTO {
   return {
@@ -40,6 +41,7 @@ function toUserDTO(user: {
     role: user.role,
     status: user.status,
     preferredLocale: toSharedLocale(user.preferredLocale),
+    churchId: user.churchId,
     createdAt: user.createdAt.toISOString(),
   };
 }
@@ -50,6 +52,11 @@ export async function registerUser(input: RegisterInput) {
     throw new AuthError("E-mail already registered", 409);
   }
 
+  const church = await prisma.church.findUnique({ where: { id: input.churchId } });
+  if (!church) {
+    throw new AuthError("Invalid church", 400);
+  }
+
   const passwordHash = await hashPassword(input.password);
   const user = await prisma.user.create({
     data: {
@@ -58,6 +65,7 @@ export async function registerUser(input: RegisterInput) {
       passwordHash,
       preferredLocale: toPrismaLocale(input.preferredLocale ?? DEFAULT_LOCALE),
       role: "MEMBER",
+      churchId: input.churchId,
     },
   });
 

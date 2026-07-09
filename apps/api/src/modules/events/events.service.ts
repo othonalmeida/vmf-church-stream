@@ -44,8 +44,9 @@ interface ListFilters {
   publishedOnly: boolean;
 }
 
-export async function listEvents(filters: ListFilters) {
+export async function listEvents(churchId: number, filters: ListFilters) {
   const where: Prisma.EventWhereInput = {
+    churchId,
     ...(filters.publishedOnly ? { status: "PUBLISHED" } : {}),
     ...(filters.from || filters.to
       ? {
@@ -61,15 +62,15 @@ export async function listEvents(filters: ListFilters) {
   return events.map(toDTO);
 }
 
-export async function getEventById(id: string, publishedOnly: boolean) {
-  const event = await prisma.event.findUnique({ where: { id } });
+export async function getEventById(id: string, churchId: number, publishedOnly: boolean) {
+  const event = await prisma.event.findFirst({ where: { id, churchId } });
   if (!event || (publishedOnly && event.status !== "PUBLISHED")) {
     throw new EventError("Event not found", 404);
   }
   return toDTO(event);
 }
 
-export async function createEvent(input: EventInput, createdById: string) {
+export async function createEvent(input: EventInput, createdById: string, churchId: number) {
   const event = await prisma.event.create({
     data: {
       title: input.title,
@@ -82,15 +83,16 @@ export async function createEvent(input: EventInput, createdById: string) {
       language: toPrismaLocale(input.language),
       status: input.status,
       createdById,
+      churchId,
     },
   });
   return toDTO(event);
 }
 
-export async function updateEvent(id: string, input: EventUpdateInput) {
+export async function updateEvent(id: string, churchId: number, input: EventUpdateInput) {
   try {
     const event = await prisma.event.update({
-      where: { id },
+      where: { id, churchId },
       data: {
         ...(input.title !== undefined ? { title: input.title } : {}),
         ...(input.description !== undefined ? { description: input.description || null } : {}),
@@ -112,9 +114,9 @@ export async function updateEvent(id: string, input: EventUpdateInput) {
   }
 }
 
-export async function deleteEvent(id: string) {
+export async function deleteEvent(id: string, churchId: number) {
   try {
-    await prisma.event.delete({ where: { id } });
+    await prisma.event.delete({ where: { id, churchId } });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
       throw new EventError("Event not found", 404);

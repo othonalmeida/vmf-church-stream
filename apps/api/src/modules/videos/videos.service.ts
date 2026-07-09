@@ -52,8 +52,9 @@ interface ListFilters {
   publishedOnly: boolean;
 }
 
-export async function listVideos(filters: ListFilters, pagination: PaginationQuery) {
+export async function listVideos(churchId: number, filters: ListFilters, pagination: PaginationQuery) {
   const where: Prisma.VideoWhereInput = {
+    churchId,
     ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
     ...(filters.language ? { originalLanguage: toPrismaLocale(filters.language as never) } : {}),
     ...(filters.offlineOnly ? { allowDownload: true } : {}),
@@ -74,15 +75,15 @@ export async function listVideos(filters: ListFilters, pagination: PaginationQue
   return toPaginatedResult(items.map(toDTO), total, pagination);
 }
 
-export async function getVideoById(id: string, publishedOnly: boolean) {
-  const video = await prisma.video.findUnique({ where: { id }, include: { subtitles: true } });
+export async function getVideoById(id: string, churchId: number, publishedOnly: boolean) {
+  const video = await prisma.video.findFirst({ where: { id, churchId }, include: { subtitles: true } });
   if (!video || (publishedOnly && video.status !== "PUBLISHED")) {
     throw new VideoError("Video not found", 404);
   }
   return toDTO(video);
 }
 
-export async function createVideo(input: VideoInput, createdById: string) {
+export async function createVideo(input: VideoInput, createdById: string, churchId: number) {
   const video = await prisma.video.create({
     data: {
       title: input.title,
@@ -95,16 +96,17 @@ export async function createVideo(input: VideoInput, createdById: string) {
       order: input.order,
       publishedAt: input.publishedAt ?? (input.status === "PUBLISHED" ? new Date() : null),
       createdById,
+      churchId,
     },
     include: { subtitles: true },
   });
   return toDTO(video);
 }
 
-export async function updateVideo(id: string, input: VideoUpdateInput) {
+export async function updateVideo(id: string, churchId: number, input: VideoUpdateInput) {
   try {
     const video = await prisma.video.update({
-      where: { id },
+      where: { id, churchId },
       data: {
         ...(input.title !== undefined ? { title: input.title } : {}),
         ...(input.description !== undefined ? { description: input.description || null } : {}),
@@ -127,9 +129,9 @@ export async function updateVideo(id: string, input: VideoUpdateInput) {
   }
 }
 
-export async function deleteVideo(id: string) {
+export async function deleteVideo(id: string, churchId: number) {
   try {
-    await prisma.video.delete({ where: { id } });
+    await prisma.video.delete({ where: { id, churchId } });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
       throw new VideoError("Video not found", 404);
@@ -138,15 +140,15 @@ export async function deleteVideo(id: string) {
   }
 }
 
-export async function getVideoOrThrow(id: string) {
-  const video = await prisma.video.findUnique({ where: { id } });
+export async function getVideoOrThrow(id: string, churchId: number) {
+  const video = await prisma.video.findFirst({ where: { id, churchId } });
   if (!video) throw new VideoError("Video not found", 404);
   return video;
 }
 
-export async function markVideoUploaded(id: string, sourceFilePath: string) {
+export async function markVideoUploaded(id: string, churchId: number, sourceFilePath: string) {
   await prisma.video.update({
-    where: { id },
+    where: { id, churchId },
     data: { sourceFilePath, transcodeStatus: "PENDING", transcodeError: null },
   });
 }

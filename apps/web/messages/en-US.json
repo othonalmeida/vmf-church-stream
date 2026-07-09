@@ -9,7 +9,8 @@
     "back": "Back",
     "error": "Something went wrong. Please try again.",
     "required": "Required field",
-    "language": "Language"
+    "language": "Language",
+    "select": "Select..."
   },
   "nav": {
     "home": "Home",
@@ -42,6 +43,7 @@
     "registerTitle": "Create account",
     "registerSubtitle": "Sign up to access the platform",
     "name": "Full name",
+    "church": "Church",
     "email": "E-mail",
     "password": "Password",
     "confirmPassword": "Confirm password",

@@ -59,7 +59,7 @@ export default async function subtitleRoutes(app: FastifyInstance) {
       const publicUrl = await storage.putFile(relativePath, resolveScratchPath(relativePath));
       if (isS3Storage) await removeScratchPath(relativeDir);
 
-      const subtitle = await upsertSubtitle(videoId, language.data, publicUrl);
+      const subtitle = await upsertSubtitle(videoId, request.user.churchId, language.data, publicUrl);
       reply.code(201).send({ subtitle });
     }
   );
@@ -69,7 +69,7 @@ export default async function subtitleRoutes(app: FastifyInstance) {
     { preHandler: [app.authenticate, app.authorize(["ADMIN"])] },
     async (request, reply) => {
       const { videoId, subtitleId } = request.params as { videoId: string; subtitleId: string };
-      await deleteSubtitle(videoId, subtitleId);
+      await deleteSubtitle(videoId, request.user.churchId, subtitleId);
       reply.code(204).send();
     }
   );

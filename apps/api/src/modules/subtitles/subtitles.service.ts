@@ -11,8 +11,8 @@ export class SubtitleError extends Error {
   }
 }
 
-export async function upsertSubtitle(videoId: string, language: SharedLocale, fileUrl: string) {
-  const video = await prisma.video.findUnique({ where: { id: videoId } });
+export async function upsertSubtitle(videoId: string, churchId: number, language: SharedLocale, fileUrl: string) {
+  const video = await prisma.video.findFirst({ where: { id: videoId, churchId } });
   if (!video) throw new SubtitleError("Video not found", 404);
 
   const subtitle = await prisma.subtitle.upsert({
@@ -23,7 +23,9 @@ export async function upsertSubtitle(videoId: string, language: SharedLocale, fi
   return subtitle;
 }
 
-export async function deleteSubtitle(videoId: string, subtitleId: string) {
+export async function deleteSubtitle(videoId: string, churchId: number, subtitleId: string) {
+  const video = await prisma.video.findFirst({ where: { id: videoId, churchId } });
+  if (!video) throw new SubtitleError("Video not found", 404);
   const subtitle = await prisma.subtitle.findUnique({ where: { id: subtitleId } });
   if (!subtitle || subtitle.videoId !== videoId) {
     throw new SubtitleError("Subtitle not found", 404);

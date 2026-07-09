@@ -17,7 +17,7 @@ export default async function userRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const filters = userQuerySchema.parse(request.query);
       const pagination = paginationQuerySchema.parse(request.query);
-      const result = await listUsers(filters, pagination);
+      const result = await listUsers(request.user.churchId, filters, pagination);
       reply.send(result);
     }
   );
@@ -28,7 +28,7 @@ export default async function userRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = idParamSchema.parse(request.params);
       const input = adminUserUpdateSchema.parse(request.body);
-      const user = await updateUser(id, input);
+      const user = await updateUser(id, request.user.churchId, input);
       reply.send({ user });
     }
   );

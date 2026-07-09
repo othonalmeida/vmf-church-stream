@@ -22,6 +22,8 @@ import viewHistoryRoutes from "./modules/view-history/view-history.routes";
 import offlineDownloadRoutes from "./modules/offline-downloads/offline-downloads.routes";
 import bannerRoutes from "./modules/banners/banners.routes";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes";
+import mediaRoutes from "./modules/media/media.routes";
+import churchRoutes from "./modules/churches/churches.routes";
 
 export async function buildApp() {
   const app = Fastify({
@@ -76,6 +78,8 @@ export async function buildApp() {
   await app.register(offlineDownloadRoutes, { prefix: "/downloads" });
   await app.register(bannerRoutes, { prefix: "/banners" });
   await app.register(dashboardRoutes, { prefix: "/dashboard" });
+  await app.register(mediaRoutes, { prefix: "/media" });
+  await app.register(churchRoutes, { prefix: "/churches" });
 
   return app;
 }

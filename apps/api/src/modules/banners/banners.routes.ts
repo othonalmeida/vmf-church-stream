@@ -13,7 +13,7 @@ export default async function bannerRoutes(app: FastifyInstance) {
 
   app.get("/", { preHandler: app.authenticate }, async (request, reply) => {
     const activeOnly = request.user.role !== "ADMIN";
-    const banners = await listBanners(activeOnly);
+    const banners = await listBanners(request.user.churchId, activeOnly);
     reply.send({ banners });
   });
 
@@ -22,7 +22,7 @@ export default async function bannerRoutes(app: FastifyInstance) {
     { preHandler: [app.authenticate, app.authorize(["ADMIN"])] },
     async (request, reply) => {
       const input = bannerInputSchema.parse(request.body);
-      const banner = await createBanner(input);
+      const banner = await createBanner(input, request.user.churchId);
       reply.code(201).send({ banner });
     }
   );
@@ -33,7 +33,7 @@ export default async function bannerRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = idParamSchema.parse(request.params);
       const input = bannerUpdateSchema.parse(request.body);
-      const banner = await updateBanner(id, input);
+      const banner = await updateBanner(id, request.user.churchId, input);
       reply.send({ banner });
     }
   );
@@ -43,7 +43,7 @@ export default async function bannerRoutes(app: FastifyInstance) {
     { preHandler: [app.authenticate, app.authorize(["ADMIN"])] },
     async (request, reply) => {
       const { id } = idParamSchema.parse(request.params);
-      await deleteBanner(id);
+      await deleteBanner(id, request.user.churchId);
       reply.code(204).send();
     }
   );

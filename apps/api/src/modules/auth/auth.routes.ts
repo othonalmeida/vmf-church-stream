@@ -1,10 +1,11 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import {
   registerSchema,
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
   updateProfileSchema,
+  refreshRequestSchema,
 } from "@vmf/shared";
 import {
   registerUser,
@@ -19,6 +20,19 @@ import {
 } from "./auth.service";
 import { setRefreshCookie, clearRefreshCookie, REFRESH_COOKIE_NAME } from "./cookie.util";
 
+// Apps nativos (React Native/Expo) nao tem cookie jar de navegador, entao o
+// cliente mobile manda esse header pra pedir o refresh token tambem no corpo
+// JSON. O cookie httpOnly continua sendo setado sempre, sem excecao - isso e
+// so um complemento pro mobile, nunca substitui o fluxo do web.
+function isMobileClient(request: FastifyRequest): boolean {
+  return request.headers["x-client"] === "mobile";
+}
+
+function readBodyRefreshToken(request: FastifyRequest): string | undefined {
+  const result = refreshRequestSchema.safeParse(request.body ?? {});
+  return result.success ? result.data.refreshToken : undefined;
+}
+
 export default async function authRoutes(app: FastifyInstance) {
   app.setErrorHandler((error, request, reply) => {
     if (error instanceof AuthError) {
@@ -31,33 +45,48 @@ export default async function authRoutes(app: FastifyInstance) {
   app.post("/register", async (request, reply) => {
     const input = registerSchema.parse(request.body);
     const { user, refreshToken } = await registerUser(input);
-    const accessToken = app.jwt.sign({ sub: user.id, role: user.role, email: user.email });
+    const accessToken = app.jwt.sign({ sub: user.id, role: user.role, email: user.email, churchId: user.churchId });
     setRefreshCookie(reply, refreshToken);
-    reply.code(201).send({ user, accessToken, expiresIn: 15 * 60 });
+    reply.code(201).send({
+      user,
+      accessToken,
+      expiresIn: 15 * 60,
+      ...(isMobileClient(request) ? { refreshToken } : {}),
+    });
   });
 
   app.post("/login", async (request, reply) => {
     const input = loginSchema.parse(request.body);
     const { user, refreshToken } = await loginUser(input);
-    const accessToken = app.jwt.sign({ sub: user.id, role: user.role, email: user.email });
+    const accessToken = app.jwt.sign({ sub: user.id, role: user.role, email: user.email, churchId: user.churchId });
     setRefreshCookie(reply, refreshToken);
-    reply.send({ user, accessToken, expiresIn: 15 * 60 });
+    reply.send({
+      user,
+      accessToken,
+      expiresIn: 15 * 60,
+      ...(isMobileClient(request) ? { refreshToken } : {}),
+    });
   });
 
   app.post("/refresh", async (request, reply) => {
-    const oldToken = request.cookies[REFRESH_COOKIE_NAME];
+    const oldToken = request.cookies[REFRESH_COOKIE_NAME] ?? readBodyRefreshToken(request);
     if (!oldToken) {
       reply.code(401).send({ error: "AuthError", message: "Missing refresh token" });
       return;
     }
     const { user, refreshToken } = await refreshSession(oldToken);
-    const accessToken = app.jwt.sign({ sub: user.id, role: user.role, email: user.email });
+    const accessToken = app.jwt.sign({ sub: user.id, role: user.role, email: user.email, churchId: user.churchId });
     setRefreshCookie(reply, refreshToken);
-    reply.send({ user, accessToken, expiresIn: 15 * 60 });
+    reply.send({
+      user,
+      accessToken,
+      expiresIn: 15 * 60,
+      ...(isMobileClient(request) ? { refreshToken } : {}),
+    });
   });
 
   app.post("/logout", async (request, reply) => {
-    const token = request.cookies[REFRESH_COOKIE_NAME];
+    const token = request.cookies[REFRESH_COOKIE_NAME] ?? readBodyRefreshToken(request);
     await logoutUser(token);
     clearRefreshCookie(reply);
     reply.code(204).send();

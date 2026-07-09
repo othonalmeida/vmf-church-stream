@@ -33,9 +33,10 @@ function toDTO(category: {
   };
 }
 
-export async function listCategories(filters: { contentType?: string; includeInactive?: boolean }) {
+export async function listCategories(churchId: number, filters: { contentType?: string; includeInactive?: boolean }) {
   const categories = await prisma.category.findMany({
     where: {
+      churchId,
       ...(filters.contentType ? { contentType: filters.contentType as never } : {}),
       ...(filters.includeInactive ? {} : { status: "ACTIVE" }),
     },
@@ -44,13 +45,13 @@ export async function listCategories(filters: { contentType?: string; includeIna
   return categories.map(toDTO);
 }
 
-export async function getCategoryById(id: string) {
-  const category = await prisma.category.findUnique({ where: { id } });
+export async function getCategoryById(id: string, churchId: number) {
+  const category = await prisma.category.findFirst({ where: { id, churchId } });
   if (!category) throw new CategoryError("Category not found", 404);
   return toDTO(category);
 }
 
-export async function createCategory(input: CategoryInput) {
+export async function createCategory(input: CategoryInput, churchId: number) {
   const category = await prisma.category.create({
     data: {
       namePt: input.namePt,
@@ -60,15 +61,16 @@ export async function createCategory(input: CategoryInput) {
       contentType: input.contentType,
       order: input.order,
       status: input.status,
+      churchId,
     },
   });
   return toDTO(category);
 }
 
-export async function updateCategory(id: string, input: CategoryUpdateInput) {
+export async function updateCategory(id: string, churchId: number, input: CategoryUpdateInput) {
   try {
     const category = await prisma.category.update({
-      where: { id },
+      where: { id, churchId },
       data: {
         ...(input.namePt !== undefined ? { namePt: input.namePt } : {}),
         ...(input.nameEn !== undefined ? { nameEn: input.nameEn } : {}),
@@ -88,9 +90,9 @@ export async function updateCategory(id: string, input: CategoryUpdateInput) {
   }
 }
 
-export async function deleteCategory(id: string) {
+export async function deleteCategory(id: string, churchId: number) {
   try {
-    await prisma.category.delete({ where: { id } });
+    await prisma.category.delete({ where: { id, churchId } });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2025") throw new CategoryError("Category not found", 404);

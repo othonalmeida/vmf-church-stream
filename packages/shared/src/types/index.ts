@@ -25,6 +25,7 @@ export interface UserDTO {
   role: RoleName;
   status: "ACTIVE" | "INACTIVE";
   preferredLocale: Locale;
+  churchId: number;
   createdAt: string;
 }
 

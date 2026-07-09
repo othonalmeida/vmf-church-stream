@@ -47,8 +47,9 @@ interface ListFilters {
   q?: string;
 }
 
-export async function listTextContents(filters: ListFilters, pagination: PaginationQuery) {
+export async function listTextContents(churchId: number, filters: ListFilters, pagination: PaginationQuery) {
   const where: Prisma.TextContentWhereInput = {
+    churchId,
     ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
     ...(filters.language ? { language: toPrismaLocale(filters.language as never) } : {}),
     ...(filters.publishedOnly ? { status: "PUBLISHED" } : {}),
@@ -67,15 +68,15 @@ export async function listTextContents(filters: ListFilters, pagination: Paginat
   return toPaginatedResult(items.map(toDTO), total, pagination);
 }
 
-export async function getTextContentById(id: string, publishedOnly: boolean) {
-  const content = await prisma.textContent.findUnique({ where: { id } });
+export async function getTextContentById(id: string, churchId: number, publishedOnly: boolean) {
+  const content = await prisma.textContent.findFirst({ where: { id, churchId } });
   if (!content || (publishedOnly && content.status !== "PUBLISHED")) {
     throw new TextContentError("Content not found", 404);
   }
   return toDTO(content);
 }
 
-export async function createTextContent(input: TextContentInput, createdById: string) {
+export async function createTextContent(input: TextContentInput, createdById: string, churchId: number) {
   const content = await prisma.textContent.create({
     data: {
       title: input.title,
@@ -88,15 +89,16 @@ export async function createTextContent(input: TextContentInput, createdById: st
       featured: input.featured,
       publishedAt: input.publishedAt ?? (input.status === "PUBLISHED" ? new Date() : null),
       createdById,
+      churchId,
     },
   });
   return toDTO(content);
 }
 
-export async function updateTextContent(id: string, input: TextContentUpdateInput) {
+export async function updateTextContent(id: string, churchId: number, input: TextContentUpdateInput) {
   try {
     const content = await prisma.textContent.update({
-      where: { id },
+      where: { id, churchId },
       data: {
         ...(input.title !== undefined ? { title: input.title } : {}),
         ...(input.description !== undefined ? { description: input.description || null } : {}),
@@ -118,9 +120,9 @@ export async function updateTextContent(id: string, input: TextContentUpdateInpu
   }
 }
 
-export async function deleteTextContent(id: string) {
+export async function deleteTextContent(id: string, churchId: number) {
   try {
-    await prisma.textContent.delete({ where: { id } });
+    await prisma.textContent.delete({ where: { id, churchId } });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
       throw new TextContentError("Content not found", 404);

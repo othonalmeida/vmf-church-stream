@@ -5,8 +5,8 @@ export default async function dashboardRoutes(app: FastifyInstance) {
   app.get(
     "/stats",
     { preHandler: [app.authenticate, app.authorize(["ADMIN"])] },
-    async (_request, reply) => {
-      const stats = await getDashboardStats();
+    async (request, reply) => {
+      const stats = await getDashboardStats(request.user.churchId);
       reply.send({ stats });
     }
   );

@@ -20,6 +20,7 @@ function toDTO(user: {
   role: "ADMIN" | "MEMBER";
   status: "ACTIVE" | "INACTIVE";
   preferredLocale: "pt_BR" | "en_US" | "es_ES";
+  churchId: number;
   createdAt: Date;
 }): UserDTO {
   return {
@@ -29,12 +30,14 @@ function toDTO(user: {
     role: user.role,
     status: user.status,
     preferredLocale: toSharedLocale(user.preferredLocale),
+    churchId: user.churchId,
     createdAt: user.createdAt.toISOString(),
   };
 }
 
-export async function listUsers(filters: UserQuery, pagination: PaginationQuery) {
+export async function listUsers(churchId: number, filters: UserQuery, pagination: PaginationQuery) {
   const where: Prisma.UserWhereInput = {
+    churchId,
     ...(filters.role ? { role: filters.role } : {}),
     ...(filters.status ? { status: filters.status } : {}),
     ...(filters.q
@@ -55,10 +58,10 @@ export async function listUsers(filters: UserQuery, pagination: PaginationQuery)
   return toPaginatedResult(users.map(toDTO), total, pagination);
 }
 
-export async function updateUser(id: string, input: AdminUserUpdateInput) {
+export async function updateUser(id: string, churchId: number, input: AdminUserUpdateInput) {
   try {
     const user = await prisma.user.update({
-      where: { id },
+      where: { id, churchId },
       data: {
         ...(input.role !== undefined ? { role: input.role } : {}),
         ...(input.status !== undefined ? { status: input.status } : {}),

@@ -32,6 +32,7 @@ export default async function videoRoutes(app: FastifyInstance) {
     const pagination = paginationQuerySchema.parse(request.query);
     const publishedOnly = request.user.role !== "ADMIN";
     const result = await listVideos(
+      request.user.churchId,
       { ...query, offlineOnly: query.offlineOnly === "true", publishedOnly },
       pagination
     );
@@ -41,7 +42,7 @@ export default async function videoRoutes(app: FastifyInstance) {
   app.get("/:id", { preHandler: app.authenticate }, async (request, reply) => {
     const { id } = idParamSchema.parse(request.params);
     const publishedOnly = request.user.role !== "ADMIN";
-    const video = await getVideoById(id, publishedOnly);
+    const video = await getVideoById(id, request.user.churchId, publishedOnly);
     reply.send({ video });
   });
 
@@ -50,7 +51,7 @@ export default async function videoRoutes(app: FastifyInstance) {
     { preHandler: [app.authenticate, app.authorize(["ADMIN"])] },
     async (request, reply) => {
       const input = videoInputSchema.parse(request.body);
-      const video = await createVideo(input, request.user.sub);
+      const video = await createVideo(input, request.user.sub, request.user.churchId);
       reply.code(201).send({ video });
     }
   );
@@ -61,7 +62,7 @@ export default async function videoRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = idParamSchema.parse(request.params);
       const input = videoUpdateSchema.parse(request.body);
-      const video = await updateVideo(id, input);
+      const video = await updateVideo(id, request.user.churchId, input);
       reply.send({ video });
     }
   );
@@ -71,8 +72,8 @@ export default async function videoRoutes(app: FastifyInstance) {
     { preHandler: [app.authenticate, app.authorize(["ADMIN"])] },
     async (request, reply) => {
       const { id } = idParamSchema.parse(request.params);
-      const video = await getVideoOrThrow(id);
-      await deleteVideo(id);
+      const video = await getVideoOrThrow(id, request.user.churchId);
+      await deleteVideo(id, request.user.churchId);
       await removeScratchPath(path.join("originals", video.id));
       await storage.deletePrefix(path.join("hls", video.id));
       await storage.deletePrefix(path.join("thumbnails", video.id));
@@ -86,7 +87,7 @@ export default async function videoRoutes(app: FastifyInstance) {
     { preHandler: [app.authenticate, app.authorize(["ADMIN"])] },
     async (request, reply) => {
       const { id } = idParamSchema.parse(request.params);
-      await getVideoOrThrow(id);
+      await getVideoOrThrow(id, request.user.churchId);
 
       const file = await request.file();
       if (!file) {
@@ -111,7 +112,7 @@ export default async function videoRoutes(app: FastifyInstance) {
         return;
       }
 
-      await markVideoUploaded(id, destPath);
+      await markVideoUploaded(id, request.user.churchId, destPath);
       enqueueTranscode(id);
 
       reply.code(202).send({ message: "Upload received, transcoding started", transcodeStatus: "PENDING" });
@@ -123,7 +124,7 @@ export default async function videoRoutes(app: FastifyInstance) {
     { preHandler: [app.authenticate, app.authorize(["ADMIN"])] },
     async (request, reply) => {
       const { id } = idParamSchema.parse(request.params);
-      const video = await getVideoOrThrow(id);
+      const video = await getVideoOrThrow(id, request.user.churchId);
       if (!video.sourceFilePath) {
         reply.code(400).send({ error: "ValidationError", message: "Video has no uploaded source file" });
         return;

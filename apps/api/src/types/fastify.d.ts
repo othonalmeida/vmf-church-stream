@@ -5,6 +5,7 @@ export interface AccessTokenPayload {
   sub: string;
   role: "ADMIN" | "MEMBER";
   email: string;
+  churchId: number;
 }
 
 declare module "@fastify/jwt" {

@@ -14,14 +14,14 @@ export default async function eventRoutes(app: FastifyInstance) {
   app.get("/", { preHandler: app.authenticate }, async (request, reply) => {
     const query = eventQuerySchema.parse(request.query);
     const publishedOnly = request.user.role !== "ADMIN";
-    const events = await listEvents({ ...query, publishedOnly });
+    const events = await listEvents(request.user.churchId, { ...query, publishedOnly });
     reply.send({ events });
   });
 
   app.get("/:id", { preHandler: app.authenticate }, async (request, reply) => {
     const { id } = idParamSchema.parse(request.params);
     const publishedOnly = request.user.role !== "ADMIN";
-    const event = await getEventById(id, publishedOnly);
+    const event = await getEventById(id, request.user.churchId, publishedOnly);
     reply.send({ event });
   });
 
@@ -30,7 +30,7 @@ export default async function eventRoutes(app: FastifyInstance) {
     { preHandler: [app.authenticate, app.authorize(["ADMIN"])] },
     async (request, reply) => {
       const input = eventInputSchema.parse(request.body);
-      const event = await createEvent(input, request.user.sub);
+      const event = await createEvent(input, request.user.sub, request.user.churchId);
       reply.code(201).send({ event });
     }
   );
@@ -41,7 +41,7 @@ export default async function eventRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = idParamSchema.parse(request.params);
       const input = eventUpdateSchema.parse(request.body);
-      const event = await updateEvent(id, input);
+      const event = await updateEvent(id, request.user.churchId, input);
       reply.send({ event });
     }
   );
@@ -51,7 +51,7 @@ export default async function eventRoutes(app: FastifyInstance) {
     { preHandler: [app.authenticate, app.authorize(["ADMIN"])] },
     async (request, reply) => {
       const { id } = idParamSchema.parse(request.params);
-      await deleteEvent(id);
+      await deleteEvent(id, request.user.churchId);
       reply.code(204).send();
     }
   );

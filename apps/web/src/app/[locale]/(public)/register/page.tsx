@@ -1,16 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations, useLocale } from "next-intl";
 import { z } from "zod";
-import { registerSchema } from "@vmf/shared";
+import { registerSchema, type ChurchDTO } from "@vmf/shared";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Link, useRouter } from "@/i18n/routing";
 import { useAuth, ApiError } from "@/contexts/auth-context";
+import { apiFetch } from "@/lib/api-client";
 
 const formSchema = registerSchema
   .extend({ confirmPassword: z.string().min(8) })
@@ -28,6 +30,13 @@ export default function RegisterPage() {
   const { register: registerUser } = useAuth();
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
+  const [churches, setChurches] = useState<ChurchDTO[]>([]);
+
+  useEffect(() => {
+    apiFetch<{ churches: ChurchDTO[] }>("/churches")
+      .then((d) => setChurches(d.churches))
+      .catch(() => {});
+  }, []);
 
   const {
     register,
@@ -60,6 +69,18 @@ export default function RegisterPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Input label={t("name")} autoComplete="name" error={errors.name?.message} {...register("name")} />
+        <Select
+          label={t("church")}
+          error={errors.churchId?.message}
+          {...register("churchId", { valueAsNumber: true })}
+        >
+          <option value="">{tCommon("select")}</option>
+          {churches.map((church) => (
+            <option key={church.id} value={church.id}>
+              {church.name}
+            </option>
+          ))}
+        </Select>
         <Input
           label={t("email")}
           type="email"

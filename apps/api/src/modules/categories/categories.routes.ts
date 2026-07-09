@@ -21,13 +21,13 @@ export default async function categoryRoutes(app: FastifyInstance) {
   app.get("/", { preHandler: app.authenticate }, async (request, reply) => {
     const query = request.query as { contentType?: string };
     const includeInactive = request.user.role === "ADMIN";
-    const categories = await listCategories({ contentType: query.contentType, includeInactive });
+    const categories = await listCategories(request.user.churchId, { contentType: query.contentType, includeInactive });
     reply.send({ categories });
   });
 
   app.get("/:id", { preHandler: app.authenticate }, async (request, reply) => {
     const { id } = idParamSchema.parse(request.params);
-    const category = await getCategoryById(id);
+    const category = await getCategoryById(id, request.user.churchId);
     reply.send({ category });
   });
 
@@ -36,7 +36,7 @@ export default async function categoryRoutes(app: FastifyInstance) {
     { preHandler: [app.authenticate, app.authorize(["ADMIN"])] },
     async (request, reply) => {
       const input = categoryInputSchema.parse(request.body);
-      const category = await createCategory(input);
+      const category = await createCategory(input, request.user.churchId);
       reply.code(201).send({ category });
     }
   );
@@ -47,7 +47,7 @@ export default async function categoryRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const { id } = idParamSchema.parse(request.params);
       const input = categoryUpdateSchema.parse(request.body);
-      const category = await updateCategory(id, input);
+      const category = await updateCategory(id, request.user.churchId, input);
       reply.send({ category });
     }
   );
@@ -57,7 +57,7 @@ export default async function categoryRoutes(app: FastifyInstance) {
     { preHandler: [app.authenticate, app.authorize(["ADMIN"])] },
     async (request, reply) => {
       const { id } = idParamSchema.parse(request.params);
-      await deleteCategory(id);
+      await deleteCategory(id, request.user.churchId);
       reply.code(204).send();
     }
   );

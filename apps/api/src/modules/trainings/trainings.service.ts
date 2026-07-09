@@ -98,9 +98,10 @@ const includeTree = {
   modules: { include: { lessons: true }, orderBy: { order: "asc" as const } },
 };
 
-export async function listTrainings(filters: { categoryId?: string; publishedOnly: boolean }, userId?: string) {
+export async function listTrainings(churchId: number, filters: { categoryId?: string; publishedOnly: boolean }, userId?: string) {
   const trainings = await prisma.training.findMany({
     where: {
+      churchId,
       ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
       ...(filters.publishedOnly ? { status: "PUBLISHED" } : {}),
     },
@@ -110,15 +111,15 @@ export async function listTrainings(filters: { categoryId?: string; publishedOnl
   return Promise.all(trainings.map((t) => toDTO(t, userId)));
 }
 
-export async function getTrainingById(id: string, publishedOnly: boolean, userId?: string) {
-  const training = await prisma.training.findUnique({ where: { id }, include: includeTree });
+export async function getTrainingById(id: string, churchId: number, publishedOnly: boolean, userId?: string) {
+  const training = await prisma.training.findFirst({ where: { id, churchId }, include: includeTree });
   if (!training || (publishedOnly && training.status !== "PUBLISHED")) {
     throw new TrainingError("Training not found", 404);
   }
   return toDTO(training, userId);
 }
 
-export async function createTraining(input: TrainingInput, createdById: string) {
+export async function createTraining(input: TrainingInput, createdById: string, churchId: number) {
   const training = await prisma.training.create({
     data: {
       title: input.title,
@@ -129,16 +130,17 @@ export async function createTraining(input: TrainingInput, createdById: string) 
       featured: input.featured,
       order: input.order,
       createdById,
+      churchId,
     },
     include: includeTree,
   });
   return toDTO(training);
 }
 
-export async function updateTraining(id: string, input: TrainingUpdateInput) {
+export async function updateTraining(id: string, churchId: number, input: TrainingUpdateInput) {
   try {
     const training = await prisma.training.update({
-      where: { id },
+      where: { id, churchId },
       data: {
         ...(input.title !== undefined ? { title: input.title } : {}),
         ...(input.description !== undefined ? { description: input.description || null } : {}),
@@ -159,9 +161,9 @@ export async function updateTraining(id: string, input: TrainingUpdateInput) {
   }
 }
 
-export async function deleteTraining(id: string) {
+export async function deleteTraining(id: string, churchId: number) {
   try {
-    await prisma.training.delete({ where: { id } });
+    await prisma.training.delete({ where: { id, churchId } });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
       throw new TrainingError("Training not found", 404);
@@ -170,7 +172,10 @@ export async function deleteTraining(id: string) {
   }
 }
 
-export async function createModule(input: TrainingModuleInput) {
+export async function createModule(input: TrainingModuleInput, churchId: number) {
+  const training = await prisma.training.findFirst({ where: { id: input.trainingId, churchId } });
+  if (!training) throw new TrainingError("Training not found", 404);
+
   const module = await prisma.trainingModule.create({
     data: {
       trainingId: input.trainingId,
@@ -182,7 +187,9 @@ export async function createModule(input: TrainingModuleInput) {
   return module;
 }
 
-export async function updateModule(id: string, input: TrainingModuleUpdateInput) {
+export async function updateModule(id: string, churchId: number, input: TrainingModuleUpdateInput) {
+  const existing = await prisma.trainingModule.findFirst({ where: { id, training: { churchId } } });
+  if (!existing) throw new TrainingError("Module not found", 404);
   try {
     return await prisma.trainingModule.update({
       where: { id },
@@ -200,7 +207,9 @@ export async function updateModule(id: string, input: TrainingModuleUpdateInput)
   }
 }
 
-export async function deleteModule(id: string) {
+export async function deleteModule(id: string, churchId: number) {
+  const existing = await prisma.trainingModule.findFirst({ where: { id, training: { churchId } } });
+  if (!existing) throw new TrainingError("Module not found", 404);
   try {
     await prisma.trainingModule.delete({ where: { id } });
   } catch (error) {
@@ -211,7 +220,10 @@ export async function deleteModule(id: string) {
   }
 }
 
-export async function createLesson(input: TrainingLessonInput) {
+export async function createLesson(input: TrainingLessonInput, churchId: number) {
+  const module = await prisma.trainingModule.findFirst({ where: { id: input.moduleId, training: { churchId } } });
+  if (!module) throw new TrainingError("Module not found", 404);
+
   const lesson = await prisma.trainingLesson.create({
     data: {
       moduleId: input.moduleId,
@@ -227,7 +239,9 @@ export async function createLesson(input: TrainingLessonInput) {
   return lesson;
 }
 
-export async function deleteLesson(id: string) {
+export async function deleteLesson(id: string, churchId: number) {
+  const existing = await prisma.trainingLesson.findFirst({ where: { id, module: { training: { churchId } } } });
+  if (!existing) throw new TrainingError("Lesson not found", 404);
   try {
     await prisma.trainingLesson.delete({ where: { id } });
   } catch (error) {
@@ -238,8 +252,8 @@ export async function deleteLesson(id: string) {
   }
 }
 
-export async function setLessonProgress(userId: string, lessonId: string, completed: boolean) {
-  const lesson = await prisma.trainingLesson.findUnique({ where: { id: lessonId } });
+export async function setLessonProgress(userId: string, lessonId: string, churchId: number, completed: boolean) {
+  const lesson = await prisma.trainingLesson.findFirst({ where: { id: lessonId, module: { training: { churchId } } } });
   if (!lesson) throw new TrainingError("Lesson not found", 404);
 
   await prisma.trainingProgress.upsert({

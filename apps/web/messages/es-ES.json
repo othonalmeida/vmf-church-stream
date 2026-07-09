@@ -9,7 +9,8 @@
     "back": "Volver",
     "error": "Ocurrió un error. Inténtalo de nuevo.",
     "required": "Campo obligatorio",
-    "language": "Idioma"
+    "language": "Idioma",
+    "select": "Seleccione..."
   },
   "nav": {
     "home": "Inicio",
@@ -42,6 +43,7 @@
     "registerTitle": "Crear cuenta",
     "registerSubtitle": "Regístrate para acceder a la plataforma",
     "name": "Nombre completo",
+    "church": "Iglesia",
     "email": "Correo electrónico",
     "password": "Contraseña",
     "confirmPassword": "Confirmar contraseña",

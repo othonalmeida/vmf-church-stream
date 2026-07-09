@@ -15,7 +15,7 @@ export default async function searchRoutes(app: FastifyInstance) {
       ? (query.types.split(",") as SearchResultItem["type"][])
       : undefined;
 
-    const results = await globalSearch({
+    const results = await globalSearch(request.user.churchId, {
       q: query.q,
       categoryId: query.categoryId,
       language: query.language as never,

@@ -21,10 +21,11 @@ export interface BannerInput {
   endsAt?: Date;
 }
 
-export async function listBanners(activeOnly: boolean) {
+export async function listBanners(churchId: number, activeOnly: boolean) {
   const now = new Date();
   return prisma.banner.findMany({
     where: {
+      churchId,
       ...(activeOnly
         ? {
             status: "ACTIVE",
@@ -37,7 +38,7 @@ export async function listBanners(activeOnly: boolean) {
   });
 }
 
-export async function createBanner(input: BannerInput) {
+export async function createBanner(input: BannerInput, churchId: number) {
   return prisma.banner.create({
     data: {
       title: input.title,
@@ -48,14 +49,15 @@ export async function createBanner(input: BannerInput) {
       status: input.status ?? "ACTIVE",
       startsAt: input.startsAt ?? null,
       endsAt: input.endsAt ?? null,
+      churchId,
     },
   });
 }
 
-export async function updateBanner(id: string, input: Partial<BannerInput>) {
+export async function updateBanner(id: string, churchId: number, input: Partial<BannerInput>) {
   try {
     return await prisma.banner.update({
-      where: { id },
+      where: { id, churchId },
       data: {
         ...(input.title !== undefined ? { title: input.title } : {}),
         ...(input.subtitle !== undefined ? { subtitle: input.subtitle || null } : {}),
@@ -75,9 +77,9 @@ export async function updateBanner(id: string, input: Partial<BannerInput>) {
   }
 }
 
-export async function deleteBanner(id: string) {
+export async function deleteBanner(id: string, churchId: number) {
   try {
-    await prisma.banner.delete({ where: { id } });
+    await prisma.banner.delete({ where: { id, churchId } });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
       throw new BannerError("Banner not found", 404);

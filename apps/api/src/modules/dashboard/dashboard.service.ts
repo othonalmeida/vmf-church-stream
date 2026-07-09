@@ -1,7 +1,7 @@
 import { prisma } from "../../lib/prisma.js";
 import type { DashboardStatsDTO } from "@vmf/shared";
 
-export async function getDashboardStats(): Promise<DashboardStatsDTO> {
+export async function getDashboardStats(churchId: number): Promise<DashboardStatsDTO> {
   const now = new Date();
 
   const [
@@ -15,21 +15,23 @@ export async function getDashboardStats(): Promise<DashboardStatsDTO> {
     topViews,
     activeUsers,
   ] = await Promise.all([
-    prisma.user.count({ where: { role: "MEMBER" } }),
-    prisma.video.count({ where: { status: "PUBLISHED" } }),
-    prisma.training.count({ where: { status: "PUBLISHED" } }),
-    prisma.event.count({ where: { status: "PUBLISHED", startDate: { gte: now } } }),
-    prisma.offlineDownload.count({ where: { status: "DOWNLOADED" } }),
-    prisma.trainingProgress.count({ where: { completed: true } }),
-    prisma.trainingLesson.count(),
+    prisma.user.count({ where: { role: "MEMBER", churchId } }),
+    prisma.video.count({ where: { status: "PUBLISHED", churchId } }),
+    prisma.training.count({ where: { status: "PUBLISHED", churchId } }),
+    prisma.event.count({ where: { status: "PUBLISHED", startDate: { gte: now }, churchId } }),
+    prisma.offlineDownload.count({ where: { status: "DOWNLOADED", video: { churchId } } }),
+    prisma.trainingProgress.count({ where: { completed: true, lesson: { module: { training: { churchId } } } } }),
+    prisma.trainingLesson.count({ where: { module: { training: { churchId } } } }),
     prisma.viewHistory.groupBy({
       by: ["videoId"],
+      where: { video: { churchId } },
       _count: { videoId: true },
       orderBy: { _count: { videoId: "desc" } },
       take: 5,
     }),
     prisma.viewHistory.groupBy({
       by: ["userId"],
+      where: { user: { churchId } },
       _count: { userId: true },
       orderBy: { _count: { userId: "desc" } },
       take: 5,

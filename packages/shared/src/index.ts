@@ -11,3 +11,4 @@ export * from "./schemas/training";
 export * from "./schemas/event";
 export * from "./schemas/favorite";
 export * from "./schemas/banner";
+export * from "./schemas/church";
