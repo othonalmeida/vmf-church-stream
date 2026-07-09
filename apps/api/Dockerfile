@@ -18,6 +18,11 @@ RUN npm ci
 COPY packages/shared packages/shared
 COPY apps/api apps/api
 
+# packages/shared aponta "main" para dist/ (necessario pro Metro do app mobile
+# conseguir consumir o pacote) - dist/ e gitignored, entao precisa ser buildado
+# aqui, senao apps/api nao acha @vmf/shared em runtime.
+RUN npm run build -w packages/shared
+
 RUN npm run prisma:generate -w apps/api
 
 # Scratch local sempre necessario (ffmpeg/upload leem e escrevem aqui antes de
