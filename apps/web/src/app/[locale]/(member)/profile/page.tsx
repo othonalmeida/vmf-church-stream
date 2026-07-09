@@ -1,20 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { SUPPORTED_LOCALES, type UpdateProfileInput } from "@vmf/shared";
+import type { UpdateProfileInput } from "@vmf/shared";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import { FlagPicker } from "@/components/ui/flag-picker";
 import { Button } from "@/components/ui/button";
 import { useAuth, ApiError } from "@/contexts/auth-context";
-
-const LOCALE_LABELS: Record<string, string> = {
-  "pt-BR": "Português (BR)",
-  "en-US": "English (US)",
-  "es-ES": "Español (ES)",
-};
 
 export default function ProfilePage() {
   const t = useTranslations("profile");
@@ -24,7 +18,7 @@ export default function ProfilePage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const { register, handleSubmit, formState: { isSubmitting } } = useForm<UpdateProfileInput>({
+  const { register, control, handleSubmit, formState: { isSubmitting } } = useForm<UpdateProfileInput>({
     defaultValues: { name: user?.name, preferredLocale: user?.preferredLocale },
   });
 
@@ -72,13 +66,13 @@ export default function ProfilePage() {
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <Input label={tAuth("name")} {...register("name")} />
           <Input label={tAuth("email")} defaultValue={user.email} disabled />
-          <Select label={t("preferredLanguage")} {...register("preferredLocale")}>
-            {SUPPORTED_LOCALES.map((l) => (
-              <option key={l} value={l}>
-                {LOCALE_LABELS[l]}
-              </option>
-            ))}
-          </Select>
+          <Controller
+            control={control}
+            name="preferredLocale"
+            render={({ field }) => (
+              <FlagPicker label={t("preferredLanguage")} value={field.value} onChange={field.onChange} />
+            )}
+          />
           <Button type="submit" isLoading={isSubmitting} className="self-start">
             {tCommon("save")}
           </Button>

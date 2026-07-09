@@ -7,56 +7,108 @@ import {
   Users,
   Tags,
   Clapperboard,
-  Captions,
   FileText,
   GraduationCap,
   CalendarDays,
   Image,
-  BarChart3,
   Settings,
   ArrowLeft,
   Menu,
   X,
+  ClipboardList,
+  ChevronDown,
 } from "lucide-react";
 import { Link, usePathname } from "@/i18n/routing";
+import { LocaleSwitcher } from "./locale-switcher";
 import { cn } from "@/lib/cn";
 
-const ADMIN_NAV = [
-  { href: "/admin/dashboard", key: "dashboard", icon: LayoutDashboard },
-  { href: "/admin/users", key: "users", icon: Users },
+const TOP_ITEMS = [{ href: "/admin/dashboard", key: "dashboard", icon: LayoutDashboard }] as const;
+
+const CADASTRO_ITEMS = [
   { href: "/admin/categories", key: "categories", icon: Tags },
   { href: "/admin/videos", key: "videos", icon: Clapperboard },
-  { href: "/admin/videos", key: "subtitles", icon: Captions },
-  { href: "/admin/text-contents", key: "content", icon: FileText },
   { href: "/admin/trainings", key: "trainings", icon: GraduationCap },
+  { href: "/admin/text-contents", key: "content", icon: FileText },
   { href: "/admin/events", key: "events", icon: CalendarDays },
   { href: "/admin/banners", key: "banners", icon: Image },
-  { href: "/admin/dashboard", key: "reports", icon: BarChart3 },
+] as const;
+
+const BOTTOM_ITEMS = [
+  { href: "/admin/users", key: "users", icon: Users },
   { href: "/admin/settings", key: "settings", icon: Settings },
 ] as const;
 
+function NavItem({
+  href,
+  icon: Icon,
+  label,
+  active,
+  onNavigate,
+  indent,
+}: {
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  active: boolean;
+  onNavigate?: () => void;
+  indent?: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      onClick={onNavigate}
+      className={cn(
+        "mx-2 mb-1 flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-ink-600 transition-colors hover:bg-surface-border hover:text-ink-950",
+        indent && "ml-6",
+        active && "bg-gold-100 text-gold-800"
+      )}
+    >
+      <Icon className="h-4 w-4" />
+      {label}
+    </Link>
+  );
+}
+
 function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
   const t = useTranslations("adminNav");
+  const cadastroActive = CADASTRO_ITEMS.some((item) => pathname === item.href);
+  const [cadastroOpen, setCadastroOpen] = useState(cadastroActive);
+
   return (
     <nav className="flex-1 overflow-y-auto py-3">
-      {ADMIN_NAV.map((item, idx) => {
-        const Icon = item.icon;
-        const active = pathname === item.href;
-        return (
-          <Link
-            key={`${item.href}-${idx}`}
+      {TOP_ITEMS.map((item) => (
+        <NavItem key={item.href} href={item.href} icon={item.icon} label={t(item.key)} active={pathname === item.href} onNavigate={onNavigate} />
+      ))}
+
+      <button
+        onClick={() => setCadastroOpen((open) => !open)}
+        className={cn(
+          "mx-2 mb-1 flex w-[calc(100%-1rem)] items-center gap-3 rounded-lg px-3 py-2 text-sm text-ink-600 transition-colors hover:bg-surface-border hover:text-ink-950",
+          cadastroActive && !cadastroOpen && "text-gold-800"
+        )}
+      >
+        <ClipboardList className="h-4 w-4" />
+        <span className="flex-1 text-left">{t("cadastro")}</span>
+        <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", cadastroOpen && "rotate-180")} />
+      </button>
+      {cadastroOpen &&
+        CADASTRO_ITEMS.map((item) => (
+          <NavItem
+            key={item.href}
             href={item.href}
-            onClick={onNavigate}
-            className={cn(
-              "mx-2 mb-1 flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-ink-600 transition-colors hover:bg-surface-border hover:text-ink-950",
-              active && "bg-gold-100 text-gold-800"
-            )}
-          >
-            <Icon className="h-4 w-4" />
-            {t(item.key)}
-          </Link>
-        );
-      })}
+            icon={item.icon}
+            label={t(item.key)}
+            active={pathname === item.href}
+            onNavigate={onNavigate}
+            indent
+          />
+        ))}
+
+      <div className="my-2 border-t border-surface-border" />
+
+      {BOTTOM_ITEMS.map((item) => (
+        <NavItem key={item.href} href={item.href} icon={item.icon} label={t(item.key)} active={pathname === item.href} onNavigate={onNavigate} />
+      ))}
     </nav>
   );
 }
@@ -76,6 +128,9 @@ export function AdminSidebar() {
           <span className="text-sm font-medium">{tNav("admin")}</span>
         </div>
         <NavLinks pathname={pathname} />
+        <div className="flex items-center justify-between border-t border-surface-border px-5 py-3">
+          <LocaleSwitcher />
+        </div>
         <Link
           href="/browse"
           className="flex items-center gap-2 border-t border-surface-border px-5 py-4 text-xs text-ink-500 hover:text-ink-950"
@@ -116,6 +171,9 @@ export function AdminSidebar() {
               </button>
             </div>
             <NavLinks pathname={pathname} onNavigate={() => setMobileOpen(false)} />
+            <div className="flex items-center justify-between border-t border-surface-border px-5 py-3">
+              <LocaleSwitcher />
+            </div>
             <Link
               href="/browse"
               onClick={() => setMobileOpen(false)}

@@ -26,6 +26,7 @@
   },
   "adminNav": {
     "dashboard": "Dashboard",
+    "cadastro": "Cadastro",
     "users": "Usuários",
     "categories": "Categorias",
     "videos": "Vídeos",
