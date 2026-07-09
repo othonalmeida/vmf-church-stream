@@ -22,10 +22,6 @@ ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 # aqui, senao o build do Next.js nao acha @vmf/shared.
 RUN npm run build -w packages/shared
 
-WORKDIR /app/apps/web
-RUN node --input-type=module -e "import('./next.config.js').then(()=>console.log('CONFIG_OK')).catch(async e=>{const {inspect}=await import('node:util');console.error(inspect(e,{depth:null}));process.exit(1)})"
-WORKDIR /app
-
 RUN npm run build -w apps/web
 
 FROM node:22-bookworm-slim AS runner
