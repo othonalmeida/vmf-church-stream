@@ -1,0 +1,25 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    // Bug conhecido do TypeScript 6.0 (beta): noUncheckedSideEffectImports
+    // rejeita "declare module '*.css'" para imports so-de-efeito-colateral
+    // mesmo com a declaracao ambiente correta (microsoft/TypeScript#63181).
+    "noUncheckedSideEffectImports": false,
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@/assets/*": [
+        "./assets/*"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "nativewind-env.d.ts"
+  ]
+}

@@ -11,10 +11,7 @@
     "forceConsistentCasingInFileNames": true,
     "declaration": false,
     "noEmit": true,
-    "baseUrl": ".",
-    "paths": {
-      "@vmf/shared": ["../../packages/shared/src/index.ts"]
-    }
+    "baseUrl": "."
   },
   "include": ["src"]
 }
