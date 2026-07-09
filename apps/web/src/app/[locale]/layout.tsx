@@ -5,6 +5,8 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { AuthProvider } from "@/contexts/auth-context";
+import { ToastProvider } from "@/contexts/toast-context";
+import { ConfirmProvider } from "@/contexts/confirm-context";
 import "../globals.css";
 
 const roboto = Roboto({
@@ -19,8 +21,19 @@ export const metadata: Metadata = {
   description: "Plataforma de streaming interna da igreja: vídeos, treinamentos, conteúdos e eventos.",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
+    // Tema e claro (surface #f8f9fa); "black-translucent" deixava os icones da
+    // barra de status brancos sobre fundo claro, quase invisiveis no iOS.
+    statusBarStyle: "default",
     title: "VMF Stream",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
 };
 
@@ -52,7 +65,11 @@ export default async function LocaleLayout({
     <html lang={locale} className={roboto.variable}>
       <body className="min-h-screen bg-surface font-sans text-ink-950 antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <AuthProvider>{children}</AuthProvider>
+          <ToastProvider>
+            <ConfirmProvider>
+              <AuthProvider>{children}</AuthProvider>
+            </ConfirmProvider>
+          </ToastProvider>
         </NextIntlClientProvider>
       </body>
     </html>

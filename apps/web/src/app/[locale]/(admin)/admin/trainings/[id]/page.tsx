@@ -12,6 +12,8 @@ import { Select } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "@/i18n/routing";
 import { ArrowLeft } from "lucide-react";
+import { useToast } from "@/contexts/toast-context";
+import { useConfirm } from "@/contexts/confirm-context";
 
 export default function AdminTrainingDetailPage() {
   const params = useParams<{ id: string }>();
@@ -19,6 +21,8 @@ export default function AdminTrainingDetailPage() {
   const [videos, setVideos] = useState<VideoDTO[]>([]);
   const [texts, setTexts] = useState<TextContentDTO[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
+  const confirm = useConfirm();
 
   const load = async () => {
     try {
@@ -46,9 +50,10 @@ export default function AdminTrainingDetailPage() {
   };
 
   const deleteModule = async (moduleId: string) => {
-    if (!confirm("Remover este módulo e todas as suas aulas?")) return;
+    if (!(await confirm("Remover este módulo e todas as suas aulas?"))) return;
     await apiFetch(`/trainings/modules/${moduleId}`, { method: "DELETE" });
     await load();
+    toast.success("Módulo removido.");
   };
 
   const deleteLesson = async (lessonId: string) => {
@@ -144,6 +149,7 @@ function AddLessonForm({
   const [title, setTitle] = useState("");
   const [required, setRequired] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const toast = useToast();
 
   const submit = async () => {
     if (!title.trim() || !refId) return;
@@ -163,8 +169,9 @@ function AddLessonForm({
       setTitle("");
       setRefId("");
       await onAdded();
+      toast.success("Aula adicionada.");
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Erro ao adicionar aula");
+      toast.error(err instanceof ApiError ? err.message : "Erro ao adicionar aula");
     } finally {
       setIsSubmitting(false);
     }

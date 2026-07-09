@@ -6,10 +6,8 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       <div className="absolute right-4 top-4">
         <LocaleSwitcher />
       </div>
-      <div className="flex items-center gap-2 text-xl font-semibold text-ink-950">
-        <span className="rounded-lg bg-ink-900 px-2 py-1 text-sm text-white">VMF</span>
-        Church Stream
-      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/logo.jpg" alt="VMF" className="h-16 w-auto" />
       <div className="w-full max-w-md">{children}</div>
     </div>
   );

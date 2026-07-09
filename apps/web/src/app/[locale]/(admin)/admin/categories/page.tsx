@@ -13,6 +13,8 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Modal } from "@/components/ui/modal";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/contexts/toast-context";
+import { useConfirm } from "@/contexts/confirm-context";
 
 const CONTENT_TYPE_LABELS: Record<string, string> = {
   VIDEO: "Vídeo",
@@ -27,6 +29,8 @@ export default function AdminCategoriesPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<CategoryDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
+  const confirm = useConfirm();
 
   const load = async () => {
     setIsLoading(true);
@@ -55,12 +59,13 @@ export default function AdminCategoriesPage() {
   };
 
   const handleDelete = async (category: CategoryDTO) => {
-    if (!confirm(`Remover a categoria "${category.namePt}"?`)) return;
+    if (!(await confirm(`Remover a categoria "${category.namePt}"?`))) return;
     try {
       await apiFetch(`/categories/${category.id}`, { method: "DELETE" });
       await load();
+      toast.success("Categoria removida.");
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Erro ao remover categoria");
+      toast.error(err instanceof ApiError ? err.message : "Erro ao remover categoria");
     }
   };
 
@@ -156,6 +161,7 @@ function CategoryFormModal({
     reset,
     formState: { errors, isSubmitting },
   } = useForm<CategoryInput>({ resolver: zodResolver(categoryInputSchema) });
+  const toast = useToast();
 
   useEffect(() => {
     reset(
@@ -181,8 +187,9 @@ function CategoryFormModal({
         await apiFetch("/categories", { method: "POST", body: data });
       }
       onSaved();
+      toast.success("Categoria salva com sucesso.");
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Erro ao salvar categoria");
+      toast.error(err instanceof ApiError ? err.message : "Erro ao salvar categoria");
     }
   };
 

@@ -7,23 +7,27 @@ import { listDownloadRecords, type DownloadRecord } from "@/lib/idb/downloads-db
 import { removeOfflineDownload } from "@/lib/offline/download-video";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/i18n/routing";
+import { useAuth } from "@/contexts/auth-context";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export default function DownloadsPage() {
   const t = useTranslations("downloads");
+  const { user } = useAuth();
   const [downloads, setDownloads] = useState<DownloadRecord[]>([]);
 
   const load = () => {
-    listDownloadRecords().then(setDownloads);
+    if (user) listDownloadRecords(user.id).then(setDownloads);
   };
 
   useEffect(() => {
     load();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   const handleRemove = async (videoId: string) => {
-    await removeOfflineDownload(videoId);
+    if (!user) return;
+    await removeOfflineDownload(videoId, user.id);
     load();
   };
 

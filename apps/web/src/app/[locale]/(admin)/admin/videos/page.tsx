@@ -22,6 +22,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Modal } from "@/components/ui/modal";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/contexts/toast-context";
+import { useConfirm } from "@/contexts/confirm-context";
 
 interface PaginatedVideos {
   items: VideoDTO[];
@@ -42,6 +44,8 @@ export default function AdminVideosPage() {
   const [metaModalVideo, setMetaModalVideo] = useState<VideoDTO | null | "new">(null);
   const [uploadModalVideo, setUploadModalVideo] = useState<VideoDTO | null>(null);
   const [subtitlesModalVideo, setSubtitlesModalVideo] = useState<VideoDTO | null>(null);
+  const toast = useToast();
+  const confirm = useConfirm();
 
   const load = useCallback(async () => {
     try {
@@ -72,12 +76,13 @@ export default function AdminVideosPage() {
   const categoryName = (id: string) => categories.find((c) => c.id === id)?.namePt ?? "-";
 
   const handleDelete = async (video: VideoDTO) => {
-    if (!confirm(`Remover "${video.title}"?`)) return;
+    if (!(await confirm(`Remover "${video.title}"?`))) return;
     try {
       await apiFetch(`/videos/${video.id}`, { method: "DELETE" });
       await load();
+      toast.success("Vídeo removido.");
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Erro ao remover vídeo");
+      toast.error(err instanceof ApiError ? err.message : "Erro ao remover vídeo");
     }
   };
 
@@ -85,8 +90,9 @@ export default function AdminVideosPage() {
     try {
       await apiFetch(`/videos/${video.id}/reprocess`, { method: "POST" });
       await load();
+      toast.success("Reprocessamento iniciado.");
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Erro ao reprocessar vídeo");
+      toast.error(err instanceof ApiError ? err.message : "Erro ao reprocessar vídeo");
     }
   };
 
@@ -211,6 +217,7 @@ function VideoFormModal({
     reset,
     formState: { errors, isSubmitting },
   } = useForm<VideoInput>({ resolver: zodResolver(videoInputSchema) });
+  const toast = useToast();
 
   useEffect(() => {
     reset(
@@ -237,8 +244,9 @@ function VideoFormModal({
         await apiFetch("/videos", { method: "POST", body: data });
       }
       onSaved();
+      toast.success("Vídeo salvo com sucesso.");
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Erro ao salvar vídeo");
+      toast.error(err instanceof ApiError ? err.message : "Erro ao salvar vídeo");
     }
   };
 
@@ -291,6 +299,7 @@ function UploadModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
   const handleUpload = async () => {
     if (!video) return;
@@ -308,6 +317,7 @@ function UploadModal({
       await uploadWithProgress(`/videos/${video.id}/upload`, formData, setProgress);
       setProgress(null);
       onUploaded();
+      toast.success("Vídeo enviado. O processamento vai começar em instantes.");
     } catch (err) {
       setProgress(null);
       setError(err instanceof ApiError ? err.message : "Erro ao enviar vídeo");
@@ -349,6 +359,7 @@ function SubtitlesModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
   const handleUpload = async () => {
     if (!video) return;
@@ -374,6 +385,7 @@ function SubtitlesModal({
       await uploadWithProgress(`/videos/${video.id}/subtitles`, formData);
       if (fileInputRef.current) fileInputRef.current.value = "";
       onChanged();
+      toast.success("Legenda enviada.");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Erro ao enviar legenda");
     } finally {
@@ -386,8 +398,9 @@ function SubtitlesModal({
     try {
       await apiFetch(`/videos/${video.id}/subtitles/${subtitleId}`, { method: "DELETE" });
       onChanged();
+      toast.success("Legenda removida.");
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Erro ao remover legenda");
+      toast.error(err instanceof ApiError ? err.message : "Erro ao remover legenda");
     }
   };
 

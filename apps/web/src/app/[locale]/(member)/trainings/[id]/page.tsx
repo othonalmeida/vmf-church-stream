@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Link } from "@/i18n/routing";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { useToast } from "@/contexts/toast-context";
 
 export default function TrainingDetailPage() {
   const t = useTranslations("trainings");
@@ -18,6 +19,7 @@ export default function TrainingDetailPage() {
   const params = useParams<{ id: string }>();
   const [training, setTraining] = useState<TrainingDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
   const [activeLesson, setActiveLesson] = useState<TrainingLessonDTO | null>(null);
   const [activeVideo, setActiveVideo] = useState<VideoDTO | null>(null);
 
@@ -62,7 +64,7 @@ export default function TrainingDetailPage() {
       });
       await load();
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : tCommon("error"));
+      toast.error(err instanceof ApiError ? err.message : tCommon("error"));
     }
   };
 

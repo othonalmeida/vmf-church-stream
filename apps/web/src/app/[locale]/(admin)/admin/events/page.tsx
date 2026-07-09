@@ -13,6 +13,9 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Modal } from "@/components/ui/modal";
 import { Badge } from "@/components/ui/badge";
+import { ImageUploadField } from "@/components/ui/image-upload";
+import { useToast } from "@/contexts/toast-context";
+import { useConfirm } from "@/contexts/confirm-context";
 
 function toLocalInputValue(iso?: string) {
   if (!iso) return "";
@@ -27,6 +30,8 @@ export default function AdminEventsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<EventDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
+  const confirm = useConfirm();
 
   const load = async () => {
     try {
@@ -46,12 +51,13 @@ export default function AdminEventsPage() {
   }, []);
 
   const handleDelete = async (event: EventDTO) => {
-    if (!confirm(`Remover "${event.title}"?`)) return;
+    if (!(await confirm(`Remover "${event.title}"?`))) return;
     try {
       await apiFetch(`/events/${event.id}`, { method: "DELETE" });
       await load();
+      toast.success("Evento removido.");
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Erro ao remover evento");
+      toast.error(err instanceof ApiError ? err.message : "Erro ao remover evento");
     }
   };
 
@@ -141,8 +147,11 @@ function EventFormModal({
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<EventInput>({ resolver: zodResolver(eventInputSchema) });
+  const toast = useToast();
 
   useEffect(() => {
     reset(
@@ -170,8 +179,9 @@ function EventFormModal({
         await apiFetch("/events", { method: "POST", body: data });
       }
       onSaved();
+      toast.success("Evento salvo com sucesso.");
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Erro ao salvar evento");
+      toast.error(err instanceof ApiError ? err.message : "Erro ao salvar evento");
     }
   };
 
@@ -194,7 +204,12 @@ function EventFormModal({
           {...register("endDate")}
         />
         <Input label="Local" {...register("location")} />
-        <Input label="URL da imagem" {...register("imageUrl")} />
+        <ImageUploadField
+          label="Imagem"
+          value={watch("imageUrl") ?? ""}
+          onChange={(url) => setValue("imageUrl", url, { shouldDirty: true })}
+          error={errors.imageUrl?.message}
+        />
         <Select label="Categoria" {...register("categoryId")}>
           <option value="">Nenhuma</option>
           {categories.map((cat) => (

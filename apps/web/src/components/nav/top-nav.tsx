@@ -16,9 +16,9 @@ export function TopNav() {
   return (
     <header className="sticky top-0 z-40 hidden border-b border-surface-border bg-surface/90 backdrop-blur md:block">
       <div className="mx-auto flex max-w-7xl items-center gap-6 px-6 py-3">
-        <Link href="/browse" className="flex items-center gap-2 text-lg font-semibold text-ink-950">
-          <span className="rounded-lg bg-ink-900 px-2 py-1 text-sm text-white">VMF</span>
-          Church Stream
+        <Link href="/browse" className="flex items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.jpg" alt="VMF" className="h-9 w-auto" />
         </Link>
 
         <nav className="flex flex-1 items-center gap-1">

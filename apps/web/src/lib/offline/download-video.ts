@@ -1,7 +1,7 @@
 import { apiFetch, API_URL, ApiError } from "@/lib/api-client";
 import { getDeviceId } from "./device-id";
 import { OFFLINE_VIDEO_CACHE } from "./cache-name";
-import { putDownloadRecord, deleteDownloadRecord, getDownloadRecord } from "@/lib/idb/downloads-db";
+import { putDownloadRecord, deleteDownloadRecord, getDownloadRecord, listAllDownloadRecords } from "@/lib/idb/downloads-db";
 
 function toAbsoluteUrl(url: string) {
   return url.startsWith("http") ? url : `${API_URL}${url}`;
@@ -18,6 +18,7 @@ function extractSegmentUrls(playlistText: string, playlistUrl: string): string[]
 
 export async function downloadVideoForOffline(
   video: { id: string; title: string; thumbnailUrl: string | null; hlsPlaylistUrl: string },
+  userId: string,
   onProgress?: (percent: number) => void
 ): Promise<void> {
   if (!("caches" in window)) {
@@ -51,6 +52,7 @@ export async function downloadVideoForOffline(
   }
 
   await putDownloadRecord({
+    userId,
     videoId: video.id,
     title: video.title,
     thumbnailUrl: video.thumbnailUrl,
@@ -62,19 +64,28 @@ export async function downloadVideoForOffline(
   });
 }
 
-export async function removeOfflineDownload(videoId: string): Promise<void> {
-  const record = await getDownloadRecord(videoId);
+export async function removeOfflineDownload(videoId: string, userId: string): Promise<void> {
+  const record = await getDownloadRecord(userId, videoId);
   if (record && "caches" in window) {
+    // Se outra conta neste mesmo aparelho ainda tem esse video na propria
+    // biblioteca, os segmentos continuam sendo referenciados por ela - so
+    // remove do Cache Storage o que nao sobra ninguem mais precisando.
+    const allRecords = await listAllDownloadRecords();
+    const stillNeeded = new Set<string>();
+    for (const other of allRecords) {
+      if (other.userId === userId && other.videoId === videoId) continue;
+      other.cachedUrls.forEach((url) => stillNeeded.add(url));
+    }
     const cache = await caches.open(OFFLINE_VIDEO_CACHE);
-    await Promise.all(record.cachedUrls.map((url) => cache.delete(url)));
+    await Promise.all(record.cachedUrls.filter((url) => !stillNeeded.has(url)).map((url) => cache.delete(url)));
   }
 
   const deviceId = getDeviceId();
-  await deleteDownloadRecord(videoId);
+  await deleteDownloadRecord(userId, videoId);
   await apiFetch(`/downloads/${videoId}?deviceId=${encodeURIComponent(deviceId)}`, { method: "DELETE" });
 }
 
-export async function isVideoDownloaded(videoId: string): Promise<boolean> {
-  const record = await getDownloadRecord(videoId);
+export async function isVideoDownloaded(videoId: string, userId: string): Promise<boolean> {
+  const record = await getDownloadRecord(userId, videoId);
   return !!record;
 }

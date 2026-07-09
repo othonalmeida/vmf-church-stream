@@ -11,8 +11,11 @@ export class OfflineDownloadError extends Error {
 
 export async function requestDownload(userId: string, videoId: string, deviceId: string) {
   const video = await prisma.video.findUnique({ where: { id: videoId } });
-  if (!video || video.status !== "PUBLISHED") {
+  if (!video) {
     throw new OfflineDownloadError("Video not found", 404);
+  }
+  if (video.status !== "PUBLISHED") {
+    throw new OfflineDownloadError("Video is not published yet", 409);
   }
   if (!video.allowDownload) {
     throw new OfflineDownloadError("This video is not available for offline download", 403);

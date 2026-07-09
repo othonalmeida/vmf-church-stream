@@ -71,7 +71,8 @@ export function AdminSidebar() {
       {/* Desktop */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-surface-border bg-surface-raised md:flex">
         <div className="flex items-center gap-2 border-b border-surface-border px-5 py-4 text-ink-950">
-          <span className="rounded-lg bg-ink-900 px-2 py-1 text-sm text-white">VMF</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.jpg" alt="VMF" className="h-7 w-auto" />
           <span className="text-sm font-medium">{tNav("admin")}</span>
         </div>
         <NavLinks pathname={pathname} />
@@ -87,7 +88,8 @@ export function AdminSidebar() {
       {/* Mobile top bar + drawer */}
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-surface-border bg-surface-raised px-4 py-3 md:hidden">
         <div className="flex items-center gap-2 text-ink-950">
-          <span className="rounded-lg bg-ink-900 px-2 py-1 text-sm text-white">VMF</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.jpg" alt="VMF" className="h-7 w-auto" />
           <span className="text-sm font-medium">{tNav("admin")}</span>
         </div>
         <button

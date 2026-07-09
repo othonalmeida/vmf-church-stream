@@ -20,6 +20,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Modal } from "@/components/ui/modal";
 import { Badge } from "@/components/ui/badge";
+import { ImageUploadField } from "@/components/ui/image-upload";
+import { useToast } from "@/contexts/toast-context";
+import { useConfirm } from "@/contexts/confirm-context";
 
 interface PaginatedTextContents {
   items: TextContentDTO[];
@@ -33,6 +36,8 @@ export default function AdminTextContentsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<TextContentDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
+  const confirm = useConfirm();
 
   const load = async () => {
     setIsLoading(true);
@@ -55,12 +60,13 @@ export default function AdminTextContentsPage() {
   }, []);
 
   const handleDelete = async (content: TextContentDTO) => {
-    if (!confirm(`Remover "${content.title}"?`)) return;
+    if (!(await confirm(`Remover "${content.title}"?`))) return;
     try {
       await apiFetch(`/text-contents/${content.id}`, { method: "DELETE" });
       await load();
+      toast.success("Conteúdo removido.");
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Erro ao remover conteúdo");
+      toast.error(err instanceof ApiError ? err.message : "Erro ao remover conteúdo");
     }
   };
 
@@ -166,8 +172,11 @@ function TextContentFormModal({
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<TextContentInput>({ resolver: zodResolver(textContentInputSchema) });
+  const toast = useToast();
 
   useEffect(() => {
     reset(
@@ -194,8 +203,9 @@ function TextContentFormModal({
         await apiFetch("/text-contents", { method: "POST", body: data });
       }
       onSaved();
+      toast.success("Conteúdo salvo com sucesso.");
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Erro ao salvar conteúdo");
+      toast.error(err instanceof ApiError ? err.message : "Erro ao salvar conteúdo");
     }
   };
 
@@ -210,7 +220,12 @@ function TextContentFormModal({
           error={errors.contentHtml?.message}
           {...register("contentHtml")}
         />
-        <Input label="URL da imagem de capa" {...register("imageUrl")} />
+        <ImageUploadField
+          label="Imagem de capa"
+          value={watch("imageUrl") ?? ""}
+          onChange={(url) => setValue("imageUrl", url, { shouldDirty: true })}
+          error={errors.imageUrl?.message}
+        />
         <Select label="Categoria" error={errors.categoryId?.message} {...register("categoryId")}>
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>

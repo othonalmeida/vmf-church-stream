@@ -12,12 +12,17 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Modal } from "@/components/ui/modal";
 import { Badge } from "@/components/ui/badge";
+import { ImageUploadField } from "@/components/ui/image-upload";
+import { useToast } from "@/contexts/toast-context";
+import { useConfirm } from "@/contexts/confirm-context";
 
 export default function AdminBannersPage() {
   const [banners, setBanners] = useState<BannerDTO[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<BannerDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
+  const confirm = useConfirm();
 
   const load = async () => {
     try {
@@ -33,12 +38,13 @@ export default function AdminBannersPage() {
   }, []);
 
   const handleDelete = async (banner: BannerDTO) => {
-    if (!confirm(`Remover banner "${banner.title}"?`)) return;
+    if (!(await confirm(`Remover banner "${banner.title}"?`))) return;
     try {
       await apiFetch(`/banners/${banner.id}`, { method: "DELETE" });
       await load();
+      toast.success("Banner removido.");
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Erro ao remover banner");
+      toast.error(err instanceof ApiError ? err.message : "Erro ao remover banner");
     }
   };
 
@@ -117,8 +123,11 @@ function BannerFormModal({
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<BannerInput>({ resolver: zodResolver(bannerInputSchema) });
+  const toast = useToast();
 
   useEffect(() => {
     reset(
@@ -143,8 +152,9 @@ function BannerFormModal({
         await apiFetch("/banners", { method: "POST", body: data });
       }
       onSaved();
+      toast.success("Banner salvo com sucesso.");
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Erro ao salvar banner");
+      toast.error(err instanceof ApiError ? err.message : "Erro ao salvar banner");
     }
   };
 
@@ -153,7 +163,12 @@ function BannerFormModal({
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Input label="Título" error={errors.title?.message} {...register("title")} />
         <Input label="Subtítulo" {...register("subtitle")} />
-        <Input label="URL da imagem" error={errors.imageUrl?.message} {...register("imageUrl")} />
+        <ImageUploadField
+          label="Imagem"
+          value={watch("imageUrl") ?? ""}
+          onChange={(url) => setValue("imageUrl", url, { shouldDirty: true, shouldValidate: true })}
+          error={errors.imageUrl?.message}
+        />
         <Input label="Link (opcional)" {...register("linkUrl")} />
         <Input label="Ordem" type="number" {...register("order", { valueAsNumber: true })} />
         <Select label="Status" {...register("status")}>

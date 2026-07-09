@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/contexts/toast-context";
 
 interface PaginatedUsers {
   items: UserDTO[];
@@ -21,6 +22,7 @@ export default function AdminUsersPage() {
   const [q, setQ] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
   const load = async (search: string) => {
     setIsLoading(true);
@@ -44,8 +46,9 @@ export default function AdminUsersPage() {
     try {
       await apiFetch(`/users/${user.id}`, { method: "PATCH", body: patch });
       await load(q);
+      toast.success("Usuário atualizado.");
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Erro ao atualizar usuário");
+      toast.error(err instanceof ApiError ? err.message : "Erro ao atualizar usuário");
     }
   };
 

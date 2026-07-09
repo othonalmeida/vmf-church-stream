@@ -13,12 +13,18 @@ import { ArrowLeft } from "lucide-react";
 import { downloadVideoForOffline, removeOfflineDownload, isVideoDownloaded } from "@/lib/offline/download-video";
 import { cn } from "@/lib/cn";
 import { categoryName } from "@/lib/category-name";
+import { useToast } from "@/contexts/toast-context";
+import { useConfirm } from "@/contexts/confirm-context";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function VideoDetailPage() {
   const t = useTranslations("videos");
   const tCommon = useTranslations("common");
   const locale = useLocale();
   const params = useParams<{ id: string }>();
+  const toast = useToast();
+  const confirm = useConfirm();
+  const { user } = useAuth();
   const [video, setVideo] = useState<VideoDTO | null>(null);
   const [category, setCategory] = useState<CategoryDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -48,13 +54,13 @@ export default function VideoDetailPage() {
           })
           .catch(() => {});
 
-        isVideoDownloaded(params.id).then(setIsDownloaded);
+        if (user) isVideoDownloaded(params.id, user.id).then(setIsDownloaded);
       } catch (err) {
         setError(err instanceof ApiError ? err.message : tCommon("error"));
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.id]);
+  }, [params.id, user?.id]);
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -62,7 +68,7 @@ export default function VideoDetailPage() {
       await navigator.share({ title: video?.title, url }).catch(() => {});
     } else {
       await navigator.clipboard.writeText(url);
-      alert(t("linkCopied"));
+      toast.success(t("linkCopied"));
     }
   };
 
@@ -75,15 +81,15 @@ export default function VideoDetailPage() {
       }
       setIsFavorited(!isFavorited);
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : tCommon("error"));
+      toast.error(err instanceof ApiError ? err.message : tCommon("error"));
     }
   };
 
   const handleDownloadToggle = async () => {
-    if (!video) return;
+    if (!video || !user) return;
     if (isDownloaded) {
-      if (!confirm(t("removeDownloadConfirm"))) return;
-      await removeOfflineDownload(video.id);
+      if (!(await confirm(t("removeDownloadConfirm")))) return;
+      await removeOfflineDownload(video.id, user.id);
       setIsDownloaded(false);
       return;
     }
@@ -92,11 +98,12 @@ export default function VideoDetailPage() {
     try {
       await downloadVideoForOffline(
         { id: video.id, title: video.title, thumbnailUrl: video.thumbnailUrl, hlsPlaylistUrl: video.hlsPlaylistUrl },
+        user.id,
         setDownloadProgress
       );
       setIsDownloaded(true);
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : tCommon("error"));
+      toast.error(err instanceof ApiError ? err.message : tCommon("error"));
     } finally {
       setDownloadProgress(null);
     }
