@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { CheckCircle2, Circle, PlayCircle, FileText } from "lucide-react";
-import type { TrainingDTO, TrainingLessonDTO, VideoDTO } from "@vmf/shared";
+import { pickLocalized, type TrainingDTO, type TrainingLessonDTO, type VideoDTO } from "@vmf/shared";
 import { apiFetch, ApiError } from "@/lib/api-client";
 import { VideoPlayer } from "@/components/media/video-player";
 import { Card } from "@/components/ui/card";
@@ -16,6 +16,7 @@ import { useToast } from "@/contexts/toast-context";
 export default function TrainingDetailPage() {
   const t = useTranslations("trainings");
   const tCommon = useTranslations("common");
+  const locale = useLocale();
   const params = useParams<{ id: string }>();
   const [training, setTraining] = useState<TrainingDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -78,7 +79,9 @@ export default function TrainingDetailPage() {
         {tCommon("back")}
       </Link>
 
-      <h1 className="text-2xl font-semibold text-ink-950">{training.title}</h1>
+      <h1 className="text-2xl font-semibold text-ink-950">
+        {pickLocalized(training.titlePt, training.titleEn, training.titleEs, locale)}
+      </h1>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">

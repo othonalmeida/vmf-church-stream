@@ -41,7 +41,9 @@ export async function listContinueWatching(userId: string) {
     .filter((h) => h.video.status === "PUBLISHED")
     .map((h) => ({
       videoId: h.videoId,
-      title: h.video.title,
+      titlePt: h.video.titlePt,
+      titleEn: h.video.titleEn,
+      titleEs: h.video.titleEs,
       thumbnailUrl: h.video.thumbnailUrl,
       watchedSeconds: h.watchedSeconds,
       percentualWatched: h.percentualWatched,

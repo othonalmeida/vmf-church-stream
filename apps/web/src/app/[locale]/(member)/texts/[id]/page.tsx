@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { useTranslations } from "next-intl";
-import type { TextContentDTO } from "@vmf/shared";
+import { useTranslations, useLocale } from "next-intl";
+import { pickLocalized, type TextContentDTO } from "@vmf/shared";
 import { apiFetch, ApiError } from "@/lib/api-client";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/i18n/routing";
@@ -11,6 +11,7 @@ import { ArrowLeft } from "lucide-react";
 
 export default function TextDetailPage() {
   const tCommon = useTranslations("common");
+  const locale = useLocale();
   const params = useParams<{ id: string }>();
   const [content, setContent] = useState<TextContentDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -44,17 +45,29 @@ export default function TextDetailPage() {
 
       {content.imageUrl && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={content.imageUrl} alt={content.title} className="h-56 w-full rounded-2xl object-cover" />
+        <img
+          src={content.imageUrl}
+          alt={pickLocalized(content.titlePt, content.titleEn, content.titleEs, locale)}
+          className="h-56 w-full rounded-2xl object-cover"
+        />
       )}
 
-      <h1 className="text-3xl font-semibold text-ink-950">{content.title}</h1>
-      {content.description && <p className="text-ink-600">{content.description}</p>}
+      <h1 className="text-3xl font-semibold text-ink-950">
+        {pickLocalized(content.titlePt, content.titleEn, content.titleEs, locale)}
+      </h1>
+      {pickLocalized(content.descriptionPt, content.descriptionEn, content.descriptionEs, locale) && (
+        <p className="text-ink-600">
+          {pickLocalized(content.descriptionPt, content.descriptionEn, content.descriptionEs, locale)}
+        </p>
+      )}
 
       <Card>
         {/* contentHtml e sanitizado no backend (sanitize-html com allowlist) antes de ser persistido. */}
         <div
           className="prose max-w-none prose-headings:text-ink-950 prose-p:text-ink-700 prose-a:text-gold-700"
-          dangerouslySetInnerHTML={{ __html: content.contentHtml }}
+          dangerouslySetInnerHTML={{
+            __html: pickLocalized(content.contentHtmlPt, content.contentHtmlEn, content.contentHtmlEs, locale),
+          }}
         />
       </Card>
     </div>

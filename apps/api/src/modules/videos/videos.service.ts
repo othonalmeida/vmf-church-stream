@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
-import { toPrismaLocale, toSharedLocale } from "../../lib/locale.js";
+import { toSharedLocale } from "../../lib/locale.js";
 import { toSkipTake, toPaginatedResult } from "../../lib/pagination.js";
 import type { VideoInput, VideoUpdateInput, VideoDTO, PaginationQuery, SubtitleDTO } from "@vmf/shared";
 
@@ -18,13 +18,16 @@ type VideoWithSubtitles = Prisma.VideoGetPayload<{ include: { subtitles: true } 
 function toDTO(video: VideoWithSubtitles): VideoDTO {
   return {
     id: video.id,
-    title: video.title,
-    description: video.description,
+    titlePt: video.titlePt,
+    titleEn: video.titleEn,
+    titleEs: video.titleEs,
+    descriptionPt: video.descriptionPt,
+    descriptionEn: video.descriptionEn,
+    descriptionEs: video.descriptionEs,
     categoryId: video.categoryId,
     thumbnailUrl: video.thumbnailUrl,
     hlsPlaylistUrl: video.hlsPlaylistUrl,
     duration: video.duration,
-    originalLanguage: toSharedLocale(video.originalLanguage),
     allowDownload: video.allowDownload,
     status: video.status as VideoDTO["status"],
     featured: video.featured,
@@ -46,7 +49,6 @@ function toDTO(video: VideoWithSubtitles): VideoDTO {
 
 interface ListFilters {
   categoryId?: string;
-  language?: string;
   offlineOnly?: boolean;
   q?: string;
   publishedOnly: boolean;
@@ -56,10 +58,17 @@ export async function listVideos(churchId: number, filters: ListFilters, paginat
   const where: Prisma.VideoWhereInput = {
     churchId,
     ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
-    ...(filters.language ? { originalLanguage: toPrismaLocale(filters.language as never) } : {}),
     ...(filters.offlineOnly ? { allowDownload: true } : {}),
     ...(filters.publishedOnly ? { status: "PUBLISHED" } : {}),
-    ...(filters.q ? { title: { contains: filters.q, mode: "insensitive" } } : {}),
+    ...(filters.q
+      ? {
+          OR: [
+            { titlePt: { contains: filters.q, mode: "insensitive" } },
+            { titleEn: { contains: filters.q, mode: "insensitive" } },
+            { titleEs: { contains: filters.q, mode: "insensitive" } },
+          ],
+        }
+      : {}),
   };
 
   const [items, total] = await Promise.all([
@@ -86,10 +95,13 @@ export async function getVideoById(id: string, churchId: number, publishedOnly: 
 export async function createVideo(input: VideoInput, createdById: string, churchId: number) {
   const video = await prisma.video.create({
     data: {
-      title: input.title,
-      description: input.description || null,
+      titlePt: input.titlePt,
+      titleEn: input.titleEn,
+      titleEs: input.titleEs,
+      descriptionPt: input.descriptionPt || null,
+      descriptionEn: input.descriptionEn || null,
+      descriptionEs: input.descriptionEs || null,
       categoryId: input.categoryId,
-      originalLanguage: toPrismaLocale(input.originalLanguage),
       allowDownload: input.allowDownload,
       status: input.status,
       featured: input.featured,
@@ -108,10 +120,13 @@ export async function updateVideo(id: string, churchId: number, input: VideoUpda
     const video = await prisma.video.update({
       where: { id, churchId },
       data: {
-        ...(input.title !== undefined ? { title: input.title } : {}),
-        ...(input.description !== undefined ? { description: input.description || null } : {}),
+        ...(input.titlePt !== undefined ? { titlePt: input.titlePt } : {}),
+        ...(input.titleEn !== undefined ? { titleEn: input.titleEn } : {}),
+        ...(input.titleEs !== undefined ? { titleEs: input.titleEs } : {}),
+        ...(input.descriptionPt !== undefined ? { descriptionPt: input.descriptionPt || null } : {}),
+        ...(input.descriptionEn !== undefined ? { descriptionEn: input.descriptionEn || null } : {}),
+        ...(input.descriptionEs !== undefined ? { descriptionEs: input.descriptionEs || null } : {}),
         ...(input.categoryId !== undefined ? { categoryId: input.categoryId } : {}),
-        ...(input.originalLanguage !== undefined ? { originalLanguage: toPrismaLocale(input.originalLanguage) } : {}),
         ...(input.allowDownload !== undefined ? { allowDownload: input.allowDownload } : {}),
         ...(input.status !== undefined ? { status: input.status } : {}),
         ...(input.featured !== undefined ? { featured: input.featured } : {}),

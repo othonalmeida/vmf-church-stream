@@ -24,6 +24,7 @@ import bannerRoutes from "./modules/banners/banners.routes";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes";
 import mediaRoutes from "./modules/media/media.routes";
 import churchRoutes from "./modules/churches/churches.routes";
+import translateRoutes from "./modules/translate/translate.routes";
 
 export async function buildApp() {
   const app = Fastify({
@@ -80,6 +81,7 @@ export async function buildApp() {
   await app.register(dashboardRoutes, { prefix: "/dashboard" });
   await app.register(mediaRoutes, { prefix: "/media" });
   await app.register(churchRoutes, { prefix: "/churches" });
+  await app.register(translateRoutes, { prefix: "/translate" });
 
   return app;
 }

@@ -34,7 +34,9 @@ export async function requestDownload(userId: string, videoId: string, deviceId:
     download,
     video: {
       id: video.id,
-      title: video.title,
+      titlePt: video.titlePt,
+      titleEn: video.titleEn,
+      titleEs: video.titleEs,
       hlsPlaylistUrl: video.hlsPlaylistUrl,
       thumbnailUrl: video.thumbnailUrl,
     },
@@ -51,7 +53,9 @@ export async function listDownloads(userId: string) {
   return downloads.map((d) => ({
     videoId: d.videoId,
     deviceId: d.deviceId,
-    title: d.video.title,
+    titlePt: d.video.titlePt,
+    titleEn: d.video.titleEn,
+    titleEs: d.video.titleEs,
     thumbnailUrl: d.video.thumbnailUrl,
     hlsPlaylistUrl: d.video.hlsPlaylistUrl,
     downloadedAt: d.downloadedAt ? d.downloadedAt.toISOString() : null,

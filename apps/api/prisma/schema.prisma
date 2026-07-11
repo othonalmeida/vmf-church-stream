@@ -169,15 +169,18 @@ model Category {
 
 model Video {
   id                String           @id @default(uuid())
-  title             String
-  description       String?
+  titlePt           String
+  titleEn           String
+  titleEs           String
+  descriptionPt     String?
+  descriptionEn     String?
+  descriptionEs     String?
   categoryId        String
   category          Category         @relation(fields: [categoryId], references: [id])
   thumbnailUrl      String?
   sourceFilePath    String?
   hlsPlaylistUrl    String?
   duration          Int?
-  originalLanguage  Locale
   allowDownload     Boolean          @default(false)
   status            PublishStatus    @default(DRAFT)
   featured          Boolean          @default(false)
@@ -219,13 +222,18 @@ model Subtitle {
 // ---------- Text contents ----------
 
 model TextContent {
-  id            String        @id @default(uuid())
-  title         String
-  description   String?
-  contentHtml   String
+  id              String        @id @default(uuid())
+  titlePt         String
+  titleEn         String
+  titleEs         String
+  descriptionPt   String?
+  descriptionEn   String?
+  descriptionEs   String?
+  contentHtmlPt   String
+  contentHtmlEn   String
+  contentHtmlEs   String
   categoryId    String
   category      Category      @relation(fields: [categoryId], references: [id])
-  language      Locale
   imageUrl      String?
   status        PublishStatus @default(DRAFT)
   featured      Boolean       @default(false)
@@ -248,9 +256,13 @@ model TextContent {
 // ---------- Trainings ----------
 
 model Training {
-  id           String        @id @default(uuid())
-  title        String
-  description  String?
+  id            String        @id @default(uuid())
+  titlePt       String
+  titleEn       String
+  titleEs       String
+  descriptionPt String?
+  descriptionEn String?
+  descriptionEs String?
   categoryId   String
   category     Category      @relation(fields: [categoryId], references: [id])
   imageUrl     String?
@@ -322,16 +334,19 @@ model TrainingProgress {
 // ---------- Events ----------
 
 model Event {
-  id           String        @id @default(uuid())
-  title        String
-  description  String?
+  id            String        @id @default(uuid())
+  titlePt       String
+  titleEn       String
+  titleEs       String
+  descriptionPt String?
+  descriptionEn String?
+  descriptionEs String?
   startDate    DateTime
   endDate      DateTime?
   location     String?
   imageUrl     String?
   categoryId   String?
   category     Category?     @relation(fields: [categoryId], references: [id])
-  language     Locale
   status       PublishStatus @default(DRAFT)
   createdById  String
   createdBy    User          @relation("EventCreatedBy", fields: [createdById], references: [id])

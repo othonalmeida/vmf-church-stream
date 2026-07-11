@@ -9,7 +9,6 @@ import {
   type TextContentInput,
   type TextContentDTO,
   type CategoryDTO,
-  SUPPORTED_LOCALES,
 } from "@vmf/shared";
 import { apiFetch, ApiError } from "@/lib/api-client";
 import { Card } from "@/components/ui/card";
@@ -21,6 +20,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Modal } from "@/components/ui/modal";
 import { Badge } from "@/components/ui/badge";
 import { ImageUploadField } from "@/components/ui/image-upload";
+import { TranslateButton } from "@/components/ui/translate-button";
 import { useToast } from "@/contexts/toast-context";
 import { useConfirm } from "@/contexts/confirm-context";
 
@@ -60,7 +60,7 @@ export default function AdminTextContentsPage() {
   }, []);
 
   const handleDelete = async (content: TextContentDTO) => {
-    if (!(await confirm(`Remover "${content.title}"?`))) return;
+    if (!(await confirm(`Remover "${content.titlePt}"?`))) return;
     try {
       await apiFetch(`/text-contents/${content.id}`, { method: "DELETE" });
       await load();
@@ -100,7 +100,6 @@ export default function AdminTextContentsPage() {
             <tr>
               <th className="px-4 py-3 font-medium">Título</th>
               <th className="px-4 py-3 font-medium">Categoria</th>
-              <th className="px-4 py-3 font-medium">Idioma</th>
               <th className="px-4 py-3 font-medium">Status</th>
               <th className="px-4 py-3 font-medium text-right">Ações</th>
             </tr>
@@ -108,16 +107,15 @@ export default function AdminTextContentsPage() {
           <tbody>
             {isLoading && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-ink-500">
+                <td colSpan={4} className="px-4 py-6 text-center text-ink-500">
                   Carregando...
                 </td>
               </tr>
             )}
             {data.map((content) => (
               <tr key={content.id} className="border-b border-surface-border/60">
-                <td className="px-4 py-3 text-ink-950">{content.title}</td>
+                <td className="px-4 py-3 text-ink-950">{content.titlePt}</td>
                 <td className="px-4 py-3 text-ink-600">{categoryName(content.categoryId)}</td>
-                <td className="px-4 py-3 text-ink-600">{content.language}</td>
                 <td className="px-4 py-3">
                   <Badge tone={content.status === "PUBLISHED" ? "success" : "neutral"}>{content.status}</Badge>
                 </td>
@@ -182,16 +180,21 @@ function TextContentFormModal({
     reset(
       content
         ? {
-            title: content.title,
-            description: content.description ?? "",
-            contentHtml: content.contentHtml,
+            titlePt: content.titlePt,
+            titleEn: content.titleEn,
+            titleEs: content.titleEs,
+            descriptionPt: content.descriptionPt ?? "",
+            descriptionEn: content.descriptionEn ?? "",
+            descriptionEs: content.descriptionEs ?? "",
+            contentHtmlPt: content.contentHtmlPt,
+            contentHtmlEn: content.contentHtmlEn,
+            contentHtmlEs: content.contentHtmlEs,
             categoryId: content.categoryId,
-            language: content.language,
             imageUrl: content.imageUrl ?? "",
             status: content.status,
             featured: content.featured,
           }
-        : { language: "pt-BR", status: "DRAFT", categoryId: categories[0]?.id }
+        : { status: "DRAFT", categoryId: categories[0]?.id }
     );
   }, [content, reset, open, categories]);
 
@@ -212,14 +215,39 @@ function TextContentFormModal({
   return (
     <Modal open={open} onClose={onClose} title={content ? "Editar conteúdo" : "Novo conteúdo"}>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <Input label="Título" error={errors.title?.message} {...register("title")} />
-        <Textarea label="Descrição curta" rows={2} {...register("description")} />
+        <Input label="Título (PT)" error={errors.titlePt?.message} {...register("titlePt")} />
+        <Textarea label="Descrição curta (PT)" rows={2} {...register("descriptionPt")} />
         <Textarea
-          label="Conteúdo (HTML)"
+          label="Conteúdo (HTML, PT)"
           rows={8}
-          error={errors.contentHtml?.message}
-          {...register("contentHtml")}
+          error={errors.contentHtmlPt?.message}
+          {...register("contentHtmlPt")}
         />
+
+        <TranslateButton
+          getFields={() => ({
+            titlePt: { text: watch("titlePt") || "" },
+            descriptionPt: { text: watch("descriptionPt") || "" },
+            contentHtmlPt: { text: watch("contentHtmlPt") || "", html: true },
+          })}
+          onTranslated={(result) => {
+            setValue("titleEn", result["en-US"].titlePt);
+            setValue("titleEs", result["es-ES"].titlePt);
+            setValue("descriptionEn", result["en-US"].descriptionPt);
+            setValue("descriptionEs", result["es-ES"].descriptionPt);
+            setValue("contentHtmlEn", result["en-US"].contentHtmlPt);
+            setValue("contentHtmlEs", result["es-ES"].contentHtmlPt);
+          }}
+        />
+
+        <Input label="Título (EN)" error={errors.titleEn?.message} {...register("titleEn")} />
+        <Textarea label="Descrição curta (EN)" rows={2} {...register("descriptionEn")} />
+        <Textarea label="Conteúdo (HTML, EN)" rows={8} error={errors.contentHtmlEn?.message} {...register("contentHtmlEn")} />
+
+        <Input label="Título (ES)" error={errors.titleEs?.message} {...register("titleEs")} />
+        <Textarea label="Descrição curta (ES)" rows={2} {...register("descriptionEs")} />
+        <Textarea label="Conteúdo (HTML, ES)" rows={8} error={errors.contentHtmlEs?.message} {...register("contentHtmlEs")} />
+
         <ImageUploadField
           label="Imagem de capa"
           value={watch("imageUrl") ?? ""}
@@ -230,13 +258,6 @@ function TextContentFormModal({
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.namePt}
-            </option>
-          ))}
-        </Select>
-        <Select label="Idioma" {...register("language")}>
-          {SUPPORTED_LOCALES.map((l) => (
-            <option key={l} value={l}>
-              {l}
             </option>
           ))}
         </Select>

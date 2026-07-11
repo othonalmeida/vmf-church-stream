@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import type { TextContentDTO, CategoryDTO } from "@vmf/shared";
+import { pickLocalized, type TextContentDTO, type CategoryDTO } from "@vmf/shared";
 import { apiFetch, ApiError } from "@/lib/api-client";
 import { Link } from "@/i18n/routing";
 import { Card } from "@/components/ui/card";
@@ -52,19 +52,23 @@ export default function TextsPage() {
       {!isLoading && items.length === 0 && <p className="text-ink-600">{t("empty")}</p>}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((item) => (
-          <Link key={item.id} href={`/texts/${item.id}`}>
-            <Card className="flex h-full flex-col gap-2 transition-colors hover:border-gold-500">
-              {item.imageUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={item.imageUrl} alt={item.title} className="mb-2 h-32 w-full rounded-lg object-cover" />
-              )}
-              <span className="text-xs uppercase tracking-wide text-gold-700">{findCategoryName(item.categoryId)}</span>
-              <h2 className="font-medium text-ink-950">{item.title}</h2>
-              {item.description && <p className="line-clamp-2 text-sm text-ink-600">{item.description}</p>}
-            </Card>
-          </Link>
-        ))}
+        {items.map((item) => {
+          const title = pickLocalized(item.titlePt, item.titleEn, item.titleEs, locale);
+          const description = pickLocalized(item.descriptionPt, item.descriptionEn, item.descriptionEs, locale);
+          return (
+            <Link key={item.id} href={`/texts/${item.id}`}>
+              <Card className="flex h-full flex-col gap-2 transition-colors hover:border-gold-500">
+                {item.imageUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={item.imageUrl} alt={title} className="mb-2 h-32 w-full rounded-lg object-cover" />
+                )}
+                <span className="text-xs uppercase tracking-wide text-gold-700">{findCategoryName(item.categoryId)}</span>
+                <h2 className="font-medium text-ink-950">{title}</h2>
+                {description && <p className="line-clamp-2 text-sm text-ink-600">{description}</p>}
+              </Card>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

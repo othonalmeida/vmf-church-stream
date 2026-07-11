@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
-import type { TrainingDTO } from "@vmf/shared";
+import { useTranslations, useLocale } from "next-intl";
+import { pickLocalized, type TrainingDTO } from "@vmf/shared";
 import { apiFetch, ApiError } from "@/lib/api-client";
 import { Link } from "@/i18n/routing";
 import { Card } from "@/components/ui/card";
@@ -12,6 +12,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 export default function TrainingsPage() {
   const t = useTranslations("trainings");
   const tCommon = useTranslations("common");
+  const locale = useLocale();
   const [trainings, setTrainings] = useState<TrainingDTO[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,19 +29,27 @@ export default function TrainingsPage() {
       {trainings.length === 0 && !error && <p className="text-ink-600">{t("empty")}</p>}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {trainings.map((training) => (
+        {trainings.map((training) => {
+          const title = pickLocalized(training.titlePt, training.titleEn, training.titleEs, locale);
+          const description = pickLocalized(
+            training.descriptionPt,
+            training.descriptionEn,
+            training.descriptionEs,
+            locale
+          );
+          return (
           <Link key={training.id} href={`/trainings/${training.id}`}>
             <Card className="flex h-full flex-col gap-3 transition-colors hover:border-gold-500">
               {training.imageUrl && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={training.imageUrl.startsWith("http") ? training.imageUrl : `${API_URL}${training.imageUrl}`}
-                  alt={training.title}
+                  alt={title}
                   className="h-32 w-full rounded-lg object-cover"
                 />
               )}
-              <h2 className="font-medium text-ink-950">{training.title}</h2>
-              {training.description && <p className="line-clamp-2 text-sm text-ink-600">{training.description}</p>}
+              <h2 className="font-medium text-ink-950">{title}</h2>
+              {description && <p className="line-clamp-2 text-sm text-ink-600">{description}</p>}
               <div className="mt-auto">
                 <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-border">
                   <div
@@ -54,7 +63,8 @@ export default function TrainingsPage() {
               </div>
             </Card>
           </Link>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

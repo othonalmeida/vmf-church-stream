@@ -71,7 +71,7 @@ export default function AdminTrainingDetailPage() {
         Voltar
       </Link>
 
-      <h1 className="text-2xl font-semibold text-ink-950">{training.title}</h1>
+      <h1 className="text-2xl font-semibold text-ink-950">{training.titlePt}</h1>
 
       {training.modules.map((module) => (
         <Card key={module.id}>
@@ -189,7 +189,7 @@ function AddLessonForm({
         <option value="">Selecione...</option>
         {options.map((o) => (
           <option key={o.id} value={o.id}>
-            {o.title}
+            {o.titlePt}
           </option>
         ))}
       </Select>

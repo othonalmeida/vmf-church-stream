@@ -9,7 +9,6 @@ import {
   type VideoInput,
   type VideoDTO,
   type CategoryDTO,
-  SUPPORTED_LOCALES,
   SUBTITLE_LANGUAGES,
 } from "@vmf/shared";
 import { apiFetch, ApiError } from "@/lib/api-client";
@@ -22,6 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Modal } from "@/components/ui/modal";
 import { Badge } from "@/components/ui/badge";
+import { TranslateButton } from "@/components/ui/translate-button";
 import { useToast } from "@/contexts/toast-context";
 import { useConfirm } from "@/contexts/confirm-context";
 
@@ -76,7 +76,7 @@ export default function AdminVideosPage() {
   const categoryName = (id: string) => categories.find((c) => c.id === id)?.namePt ?? "-";
 
   const handleDelete = async (video: VideoDTO) => {
-    if (!(await confirm(`Remover "${video.title}"?`))) return;
+    if (!(await confirm(`Remover "${video.titlePt}"?`))) return;
     try {
       await apiFetch(`/videos/${video.id}`, { method: "DELETE" });
       await load();
@@ -134,7 +134,7 @@ export default function AdminVideosPage() {
             )}
             {videos.map((video) => (
               <tr key={video.id} className="border-b border-surface-border/60">
-                <td className="px-4 py-3 text-ink-950">{video.title}</td>
+                <td className="px-4 py-3 text-ink-950">{video.titlePt}</td>
                 <td className="px-4 py-3 text-ink-600">{categoryName(video.categoryId)}</td>
                 <td className="px-4 py-3">
                   <Badge tone={video.status === "PUBLISHED" ? "success" : "neutral"}>{video.status}</Badge>
@@ -215,6 +215,8 @@ function VideoFormModal({
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<VideoInput>({ resolver: zodResolver(videoInputSchema) });
   const toast = useToast();
@@ -223,16 +225,19 @@ function VideoFormModal({
     reset(
       video
         ? {
-            title: video.title,
-            description: video.description ?? "",
+            titlePt: video.titlePt,
+            titleEn: video.titleEn,
+            titleEs: video.titleEs,
+            descriptionPt: video.descriptionPt ?? "",
+            descriptionEn: video.descriptionEn ?? "",
+            descriptionEs: video.descriptionEs ?? "",
             categoryId: video.categoryId,
-            originalLanguage: video.originalLanguage,
             allowDownload: video.allowDownload,
             status: video.status,
             featured: video.featured,
             order: video.order,
           }
-        : { originalLanguage: "pt-BR", status: "DRAFT", order: 0, categoryId: categories[0]?.id, allowDownload: false }
+        : { status: "DRAFT", order: 0, categoryId: categories[0]?.id, allowDownload: false }
     );
   }, [video, reset, open, categories]);
 
@@ -253,19 +258,31 @@ function VideoFormModal({
   return (
     <Modal open={open} onClose={onClose} title={video ? "Editar vídeo" : "Novo vídeo"}>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <Input label="Título" error={errors.title?.message} {...register("title")} />
-        <Textarea label="Descrição" rows={3} {...register("description")} />
+        <Input label="Título (PT)" error={errors.titlePt?.message} {...register("titlePt")} />
+        <Textarea label="Descrição (PT)" rows={3} {...register("descriptionPt")} />
+
+        <TranslateButton
+          getFields={() => ({
+            titlePt: { text: watch("titlePt") || "" },
+            descriptionPt: { text: watch("descriptionPt") || "" },
+          })}
+          onTranslated={(result) => {
+            setValue("titleEn", result["en-US"].titlePt);
+            setValue("titleEs", result["es-ES"].titlePt);
+            setValue("descriptionEn", result["en-US"].descriptionPt);
+            setValue("descriptionEs", result["es-ES"].descriptionPt);
+          }}
+        />
+
+        <Input label="Título (EN)" error={errors.titleEn?.message} {...register("titleEn")} />
+        <Textarea label="Descrição (EN)" rows={3} {...register("descriptionEn")} />
+        <Input label="Título (ES)" error={errors.titleEs?.message} {...register("titleEs")} />
+        <Textarea label="Descrição (ES)" rows={3} {...register("descriptionEs")} />
+
         <Select label="Categoria" error={errors.categoryId?.message} {...register("categoryId")}>
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.namePt}
-            </option>
-          ))}
-        </Select>
-        <Select label="Idioma original" {...register("originalLanguage")}>
-          {SUPPORTED_LOCALES.map((l) => (
-            <option key={l} value={l}>
-              {l}
             </option>
           ))}
         </Select>
@@ -327,7 +344,7 @@ function UploadModal({
   if (!video) return null;
 
   return (
-    <Modal open={open} onClose={onClose} title={`Enviar arquivo: ${video.title}`}>
+    <Modal open={open} onClose={onClose} title={`Enviar arquivo: ${video.titlePt}`}>
       <div className="flex flex-col gap-4">
         <input ref={fileInputRef} type="file" accept="video/*" className="text-sm text-ink-600" />
         {error && <p className="text-sm text-red-600">{error}</p>}
@@ -407,7 +424,7 @@ function SubtitlesModal({
   if (!video) return null;
 
   return (
-    <Modal open={open} onClose={onClose} title={`Legendas: ${video.title}`}>
+    <Modal open={open} onClose={onClose} title={`Legendas: ${video.titlePt}`}>
       <div className="flex flex-col gap-4">
         <ul className="flex flex-col gap-2">
           {video.subtitles.length === 0 && <li className="text-sm text-ink-500">Nenhuma legenda enviada.</li>}

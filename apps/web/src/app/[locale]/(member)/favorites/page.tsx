@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
-import type { FavoritableTypeName } from "@vmf/shared";
+import { useTranslations, useLocale } from "next-intl";
+import { pickLocalized, type FavoritableTypeName } from "@vmf/shared";
 import { apiFetch, ApiError } from "@/lib/api-client";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/i18n/routing";
@@ -11,7 +11,9 @@ interface FavoriteItem {
   id: string;
   contentType: FavoritableTypeName;
   contentId: string;
-  title: string;
+  titlePt: string;
+  titleEn: string;
+  titleEs: string;
   thumbnailUrl: string | null;
   createdAt: string;
 }
@@ -27,6 +29,7 @@ export default function FavoritesPage() {
   const t = useTranslations("favorites");
   const tSearch = useTranslations("search");
   const tCommon = useTranslations("common");
+  const locale = useLocale();
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,7 +57,9 @@ export default function FavoritesPage() {
           <Link key={item.id} href={`${TYPE_ROUTES[item.contentType]}/${item.contentId}`}>
             <Card className="flex h-full flex-col gap-1 transition-colors hover:border-gold-500">
               <span className="text-xs uppercase tracking-wide text-gold-700">{typeLabels[item.contentType]}</span>
-              <h3 className="font-medium text-ink-950">{item.title}</h3>
+              <h3 className="font-medium text-ink-950">
+                {pickLocalized(item.titlePt, item.titleEn, item.titleEs, locale)}
+              </h3>
             </Card>
           </Link>
         ))}

@@ -82,8 +82,12 @@ async function toDTO(training: TrainingWithTree, userId?: string): Promise<Train
 
   return {
     id: training.id,
-    title: training.title,
-    description: training.description,
+    titlePt: training.titlePt,
+    titleEn: training.titleEn,
+    titleEs: training.titleEs,
+    descriptionPt: training.descriptionPt,
+    descriptionEn: training.descriptionEn,
+    descriptionEs: training.descriptionEs,
     categoryId: training.categoryId,
     imageUrl: training.imageUrl,
     status: training.status as TrainingDTO["status"],
@@ -122,8 +126,12 @@ export async function getTrainingById(id: string, churchId: number, publishedOnl
 export async function createTraining(input: TrainingInput, createdById: string, churchId: number) {
   const training = await prisma.training.create({
     data: {
-      title: input.title,
-      description: input.description || null,
+      titlePt: input.titlePt,
+      titleEn: input.titleEn,
+      titleEs: input.titleEs,
+      descriptionPt: input.descriptionPt || null,
+      descriptionEn: input.descriptionEn || null,
+      descriptionEs: input.descriptionEs || null,
       categoryId: input.categoryId,
       imageUrl: input.imageUrl || null,
       status: input.status,
@@ -142,8 +150,12 @@ export async function updateTraining(id: string, churchId: number, input: Traini
     const training = await prisma.training.update({
       where: { id, churchId },
       data: {
-        ...(input.title !== undefined ? { title: input.title } : {}),
-        ...(input.description !== undefined ? { description: input.description || null } : {}),
+        ...(input.titlePt !== undefined ? { titlePt: input.titlePt } : {}),
+        ...(input.titleEn !== undefined ? { titleEn: input.titleEn } : {}),
+        ...(input.titleEs !== undefined ? { titleEs: input.titleEs } : {}),
+        ...(input.descriptionPt !== undefined ? { descriptionPt: input.descriptionPt || null } : {}),
+        ...(input.descriptionEn !== undefined ? { descriptionEn: input.descriptionEn || null } : {}),
+        ...(input.descriptionEs !== undefined ? { descriptionEs: input.descriptionEs || null } : {}),
         ...(input.categoryId !== undefined ? { categoryId: input.categoryId } : {}),
         ...(input.imageUrl !== undefined ? { imageUrl: input.imageUrl || null } : {}),
         ...(input.status !== undefined ? { status: input.status } : {}),

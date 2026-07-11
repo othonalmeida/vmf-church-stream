@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import type { EventDTO } from "@vmf/shared";
+import { pickLocalized, type EventDTO } from "@vmf/shared";
 import {
   addMonths,
   addWeeks,
@@ -111,7 +111,7 @@ export function EventCalendar({
               >
                 <View className="flex-1 pr-2">
                   <Text className="text-sm font-medium text-ink-950" numberOfLines={1}>
-                    {event.title}
+                    {pickLocalized(event.titlePt, event.titleEn, event.titleEs, i18n.language)}
                   </Text>
                   {event.location && (
                     <Text className="text-xs text-ink-500" numberOfLines={1}>
@@ -151,7 +151,7 @@ export function EventCalendar({
                       {dayEvents.slice(0, 2).map((event) => (
                         <Pressable key={event.id} onPress={() => onSelect(event)} className="rounded bg-gold-100 px-1 py-0.5">
                           <Text className="text-[9px] text-gold-800" numberOfLines={1}>
-                            {event.title}
+                            {pickLocalized(event.titlePt, event.titleEn, event.titleEs, i18n.language)}
                           </Text>
                         </Pressable>
                       ))}

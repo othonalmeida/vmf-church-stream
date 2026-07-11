@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Modal } from "@/components/ui/modal";
 import { Badge } from "@/components/ui/badge";
 import { ImageUploadField } from "@/components/ui/image-upload";
+import { TranslateButton } from "@/components/ui/translate-button";
 import { Link } from "@/i18n/routing";
 import { useToast } from "@/contexts/toast-context";
 import { useConfirm } from "@/contexts/confirm-context";
@@ -45,7 +46,7 @@ export default function AdminTrainingsPage() {
   }, []);
 
   const handleDelete = async (training: TrainingDTO) => {
-    if (!(await confirm(`Remover "${training.title}"?`))) return;
+    if (!(await confirm(`Remover "${training.titlePt}"?`))) return;
     try {
       await apiFetch(`/trainings/${training.id}`, { method: "DELETE" });
       await load();
@@ -85,7 +86,7 @@ export default function AdminTrainingsPage() {
           <tbody>
             {trainings.map((training) => (
               <tr key={training.id} className="border-b border-surface-border/60">
-                <td className="px-4 py-3 text-ink-950">{training.title}</td>
+                <td className="px-4 py-3 text-ink-950">{training.titlePt}</td>
                 <td className="px-4 py-3 text-ink-600">{training.modules.length}</td>
                 <td className="px-4 py-3">
                   <Badge tone={training.status === "PUBLISHED" ? "success" : "neutral"}>{training.status}</Badge>
@@ -161,8 +162,27 @@ function CreateTrainingModal({
   return (
     <Modal open={open} onClose={onClose} title="Novo treinamento">
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <Input label="Título" error={errors.title?.message} {...register("title")} />
-        <Textarea label="Descrição" rows={3} {...register("description")} />
+        <Input label="Título (PT)" error={errors.titlePt?.message} {...register("titlePt")} />
+        <Textarea label="Descrição (PT)" rows={3} {...register("descriptionPt")} />
+
+        <TranslateButton
+          getFields={() => ({
+            titlePt: { text: watch("titlePt") || "" },
+            descriptionPt: { text: watch("descriptionPt") || "" },
+          })}
+          onTranslated={(result) => {
+            setValue("titleEn", result["en-US"].titlePt);
+            setValue("titleEs", result["es-ES"].titlePt);
+            setValue("descriptionEn", result["en-US"].descriptionPt);
+            setValue("descriptionEs", result["es-ES"].descriptionPt);
+          }}
+        />
+
+        <Input label="Título (EN)" error={errors.titleEn?.message} {...register("titleEn")} />
+        <Textarea label="Descrição (EN)" rows={3} {...register("descriptionEn")} />
+        <Input label="Título (ES)" error={errors.titleEs?.message} {...register("titleEs")} />
+        <Textarea label="Descrição (ES)" rows={3} {...register("descriptionEs")} />
+
         <Select label="Categoria" error={errors.categoryId?.message} {...register("categoryId")}>
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>

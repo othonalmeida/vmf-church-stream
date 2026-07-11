@@ -1,4 +1,4 @@
-import type { EventDTO } from '@vmf/shared';
+import { pickLocalized, type EventDTO } from '@vmf/shared';
 import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +11,7 @@ import { ApiError, apiFetch } from '@/lib/api-client';
 import { resolveMediaUrl } from '@/lib/media';
 
 export default function EventosScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [events, setEvents] = useState<EventDTO[]>([]);
   const [selected, setSelected] = useState<EventDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +38,11 @@ export default function EventosScreen() {
         <EventCalendar events={events} onSelect={setSelected} />
       </ScrollView>
 
-      <Modal open={selected !== null} onClose={() => setSelected(null)} title={selected?.title ?? ''}>
+      <Modal
+        open={selected !== null}
+        onClose={() => setSelected(null)}
+        title={selected ? pickLocalized(selected.titlePt, selected.titleEn, selected.titleEs, i18n.language) : ''}
+      >
         {selected && (
           <View className="gap-2">
             {image && (
@@ -46,7 +50,11 @@ export default function EventosScreen() {
             )}
             <Text className="text-sm text-ink-700">{new Date(selected.startDate).toLocaleString()}</Text>
             {selected.location && <Text className="text-sm text-ink-600">{selected.location}</Text>}
-            {selected.description && <Text className="text-sm text-ink-700">{selected.description}</Text>}
+            {pickLocalized(selected.descriptionPt, selected.descriptionEn, selected.descriptionEs, i18n.language) && (
+              <Text className="text-sm text-ink-700">
+                {pickLocalized(selected.descriptionPt, selected.descriptionEn, selected.descriptionEs, i18n.language)}
+              </Text>
+            )}
           </View>
         )}
       </Modal>

@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
-import { toPrismaLocale, toSharedLocale } from "../../lib/locale.js";
 import type { EventInput, EventUpdateInput, EventDTO } from "@vmf/shared";
 
 export class EventError extends Error {
@@ -14,26 +13,32 @@ export class EventError extends Error {
 
 function toDTO(event: {
   id: string;
-  title: string;
-  description: string | null;
+  titlePt: string;
+  titleEn: string;
+  titleEs: string;
+  descriptionPt: string | null;
+  descriptionEn: string | null;
+  descriptionEs: string | null;
   startDate: Date;
   endDate: Date | null;
   location: string | null;
   imageUrl: string | null;
   categoryId: string | null;
-  language: "pt_BR" | "en_US" | "es_ES";
   status: string;
 }): EventDTO {
   return {
     id: event.id,
-    title: event.title,
-    description: event.description,
+    titlePt: event.titlePt,
+    titleEn: event.titleEn,
+    titleEs: event.titleEs,
+    descriptionPt: event.descriptionPt,
+    descriptionEn: event.descriptionEn,
+    descriptionEs: event.descriptionEs,
     startDate: event.startDate.toISOString(),
     endDate: event.endDate ? event.endDate.toISOString() : null,
     location: event.location,
     imageUrl: event.imageUrl,
     categoryId: event.categoryId,
-    language: toSharedLocale(event.language),
     status: event.status as EventDTO["status"],
   };
 }
@@ -73,14 +78,17 @@ export async function getEventById(id: string, churchId: number, publishedOnly: 
 export async function createEvent(input: EventInput, createdById: string, churchId: number) {
   const event = await prisma.event.create({
     data: {
-      title: input.title,
-      description: input.description || null,
+      titlePt: input.titlePt,
+      titleEn: input.titleEn,
+      titleEs: input.titleEs,
+      descriptionPt: input.descriptionPt || null,
+      descriptionEn: input.descriptionEn || null,
+      descriptionEs: input.descriptionEs || null,
       startDate: input.startDate,
       endDate: input.endDate ?? null,
       location: input.location || null,
       imageUrl: input.imageUrl || null,
       categoryId: input.categoryId || null,
-      language: toPrismaLocale(input.language),
       status: input.status,
       createdById,
       churchId,
@@ -94,14 +102,17 @@ export async function updateEvent(id: string, churchId: number, input: EventUpda
     const event = await prisma.event.update({
       where: { id, churchId },
       data: {
-        ...(input.title !== undefined ? { title: input.title } : {}),
-        ...(input.description !== undefined ? { description: input.description || null } : {}),
+        ...(input.titlePt !== undefined ? { titlePt: input.titlePt } : {}),
+        ...(input.titleEn !== undefined ? { titleEn: input.titleEn } : {}),
+        ...(input.titleEs !== undefined ? { titleEs: input.titleEs } : {}),
+        ...(input.descriptionPt !== undefined ? { descriptionPt: input.descriptionPt || null } : {}),
+        ...(input.descriptionEn !== undefined ? { descriptionEn: input.descriptionEn || null } : {}),
+        ...(input.descriptionEs !== undefined ? { descriptionEs: input.descriptionEs || null } : {}),
         ...(input.startDate !== undefined ? { startDate: input.startDate } : {}),
         ...(input.endDate !== undefined ? { endDate: input.endDate } : {}),
         ...(input.location !== undefined ? { location: input.location || null } : {}),
         ...(input.imageUrl !== undefined ? { imageUrl: input.imageUrl || null } : {}),
         ...(input.categoryId !== undefined ? { categoryId: input.categoryId || null } : {}),
-        ...(input.language !== undefined ? { language: toPrismaLocale(input.language) } : {}),
         ...(input.status !== undefined ? { status: input.status } : {}),
       },
     });

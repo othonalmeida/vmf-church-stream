@@ -1,7 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
 import { sanitizeContentHtml } from "../../lib/sanitize.js";
-import { toPrismaLocale, toSharedLocale } from "../../lib/locale.js";
 import { toSkipTake, toPaginatedResult } from "../../lib/pagination.js";
 import type { TextContentInput, TextContentUpdateInput, TextContentDTO, PaginationQuery } from "@vmf/shared";
 
@@ -16,11 +15,16 @@ export class TextContentError extends Error {
 
 function toDTO(content: {
   id: string;
-  title: string;
-  description: string | null;
-  contentHtml: string;
+  titlePt: string;
+  titleEn: string;
+  titleEs: string;
+  descriptionPt: string | null;
+  descriptionEn: string | null;
+  descriptionEs: string | null;
+  contentHtmlPt: string;
+  contentHtmlEn: string;
+  contentHtmlEs: string;
   categoryId: string;
-  language: "pt_BR" | "en_US" | "es_ES";
   imageUrl: string | null;
   status: string;
   featured: boolean;
@@ -28,11 +32,16 @@ function toDTO(content: {
 }): TextContentDTO {
   return {
     id: content.id,
-    title: content.title,
-    description: content.description,
-    contentHtml: content.contentHtml,
+    titlePt: content.titlePt,
+    titleEn: content.titleEn,
+    titleEs: content.titleEs,
+    descriptionPt: content.descriptionPt,
+    descriptionEn: content.descriptionEn,
+    descriptionEs: content.descriptionEs,
+    contentHtmlPt: content.contentHtmlPt,
+    contentHtmlEn: content.contentHtmlEn,
+    contentHtmlEs: content.contentHtmlEs,
     categoryId: content.categoryId,
-    language: toSharedLocale(content.language),
     imageUrl: content.imageUrl,
     status: content.status as TextContentDTO["status"],
     featured: content.featured,
@@ -42,7 +51,6 @@ function toDTO(content: {
 
 interface ListFilters {
   categoryId?: string;
-  language?: string;
   publishedOnly: boolean;
   q?: string;
 }
@@ -51,9 +59,16 @@ export async function listTextContents(churchId: number, filters: ListFilters, p
   const where: Prisma.TextContentWhereInput = {
     churchId,
     ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
-    ...(filters.language ? { language: toPrismaLocale(filters.language as never) } : {}),
     ...(filters.publishedOnly ? { status: "PUBLISHED" } : {}),
-    ...(filters.q ? { title: { contains: filters.q, mode: "insensitive" } } : {}),
+    ...(filters.q
+      ? {
+          OR: [
+            { titlePt: { contains: filters.q, mode: "insensitive" } },
+            { titleEn: { contains: filters.q, mode: "insensitive" } },
+            { titleEs: { contains: filters.q, mode: "insensitive" } },
+          ],
+        }
+      : {}),
   };
 
   const [items, total] = await Promise.all([
@@ -79,11 +94,16 @@ export async function getTextContentById(id: string, churchId: number, published
 export async function createTextContent(input: TextContentInput, createdById: string, churchId: number) {
   const content = await prisma.textContent.create({
     data: {
-      title: input.title,
-      description: input.description || null,
-      contentHtml: sanitizeContentHtml(input.contentHtml),
+      titlePt: input.titlePt,
+      titleEn: input.titleEn,
+      titleEs: input.titleEs,
+      descriptionPt: input.descriptionPt || null,
+      descriptionEn: input.descriptionEn || null,
+      descriptionEs: input.descriptionEs || null,
+      contentHtmlPt: sanitizeContentHtml(input.contentHtmlPt),
+      contentHtmlEn: sanitizeContentHtml(input.contentHtmlEn),
+      contentHtmlEs: sanitizeContentHtml(input.contentHtmlEs),
       categoryId: input.categoryId,
-      language: toPrismaLocale(input.language),
       imageUrl: input.imageUrl || null,
       status: input.status,
       featured: input.featured,
@@ -100,11 +120,16 @@ export async function updateTextContent(id: string, churchId: number, input: Tex
     const content = await prisma.textContent.update({
       where: { id, churchId },
       data: {
-        ...(input.title !== undefined ? { title: input.title } : {}),
-        ...(input.description !== undefined ? { description: input.description || null } : {}),
-        ...(input.contentHtml !== undefined ? { contentHtml: sanitizeContentHtml(input.contentHtml) } : {}),
+        ...(input.titlePt !== undefined ? { titlePt: input.titlePt } : {}),
+        ...(input.titleEn !== undefined ? { titleEn: input.titleEn } : {}),
+        ...(input.titleEs !== undefined ? { titleEs: input.titleEs } : {}),
+        ...(input.descriptionPt !== undefined ? { descriptionPt: input.descriptionPt || null } : {}),
+        ...(input.descriptionEn !== undefined ? { descriptionEn: input.descriptionEn || null } : {}),
+        ...(input.descriptionEs !== undefined ? { descriptionEs: input.descriptionEs || null } : {}),
+        ...(input.contentHtmlPt !== undefined ? { contentHtmlPt: sanitizeContentHtml(input.contentHtmlPt) } : {}),
+        ...(input.contentHtmlEn !== undefined ? { contentHtmlEn: sanitizeContentHtml(input.contentHtmlEn) } : {}),
+        ...(input.contentHtmlEs !== undefined ? { contentHtmlEs: sanitizeContentHtml(input.contentHtmlEs) } : {}),
         ...(input.categoryId !== undefined ? { categoryId: input.categoryId } : {}),
-        ...(input.language !== undefined ? { language: toPrismaLocale(input.language) } : {}),
         ...(input.imageUrl !== undefined ? { imageUrl: input.imageUrl || null } : {}),
         ...(input.status !== undefined ? { status: input.status } : {}),
         ...(input.featured !== undefined ? { featured: input.featured } : {}),

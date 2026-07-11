@@ -1,12 +1,14 @@
 import { prisma } from "../../lib/prisma.js";
-import { toPrismaLocale } from "../../lib/locale.js";
-import type { Locale as SharedLocale } from "@vmf/shared";
 
 export interface SearchResultItem {
   id: string;
   type: "VIDEO" | "TRAINING" | "TEXT" | "EVENT";
-  title: string;
-  description: string | null;
+  titlePt: string;
+  titleEn: string;
+  titleEs: string;
+  descriptionPt: string | null;
+  descriptionEn: string | null;
+  descriptionEs: string | null;
   thumbnailUrl: string | null;
   categoryId: string | null;
 }
@@ -14,15 +16,23 @@ export interface SearchResultItem {
 interface SearchFilters {
   q?: string;
   categoryId?: string;
-  language?: SharedLocale;
   types?: SearchResultItem["type"][];
   offlineOnly?: boolean;
+}
+
+function matchTitle(q: string) {
+  return {
+    OR: [
+      { titlePt: { contains: q, mode: "insensitive" as const } },
+      { titleEn: { contains: q, mode: "insensitive" as const } },
+      { titleEs: { contains: q, mode: "insensitive" as const } },
+    ],
+  };
 }
 
 export async function globalSearch(churchId: number, filters: SearchFilters): Promise<SearchResultItem[]> {
   const q = filters.q?.trim();
   const wantsType = (type: SearchResultItem["type"]) => !filters.types || filters.types.includes(type);
-  const language = filters.language ? toPrismaLocale(filters.language) : undefined;
 
   const results: SearchResultItem[] = [];
 
@@ -31,9 +41,8 @@ export async function globalSearch(churchId: number, filters: SearchFilters): Pr
       where: {
         churchId,
         status: "PUBLISHED",
-        ...(q ? { title: { contains: q, mode: "insensitive" } } : {}),
+        ...(q ? matchTitle(q) : {}),
         ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
-        ...(language ? { originalLanguage: language } : {}),
         ...(filters.offlineOnly ? { allowDownload: true } : {}),
       },
       take: 20,
@@ -42,8 +51,12 @@ export async function globalSearch(churchId: number, filters: SearchFilters): Pr
       ...videos.map((v) => ({
         id: v.id,
         type: "VIDEO" as const,
-        title: v.title,
-        description: v.description,
+        titlePt: v.titlePt,
+        titleEn: v.titleEn,
+        titleEs: v.titleEs,
+        descriptionPt: v.descriptionPt,
+        descriptionEn: v.descriptionEn,
+        descriptionEs: v.descriptionEs,
         thumbnailUrl: v.thumbnailUrl,
         categoryId: v.categoryId,
       }))
@@ -55,7 +68,7 @@ export async function globalSearch(churchId: number, filters: SearchFilters): Pr
       where: {
         churchId,
         status: "PUBLISHED",
-        ...(q ? { title: { contains: q, mode: "insensitive" } } : {}),
+        ...(q ? matchTitle(q) : {}),
         ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
       },
       take: 20,
@@ -64,8 +77,12 @@ export async function globalSearch(churchId: number, filters: SearchFilters): Pr
       ...trainings.map((t) => ({
         id: t.id,
         type: "TRAINING" as const,
-        title: t.title,
-        description: t.description,
+        titlePt: t.titlePt,
+        titleEn: t.titleEn,
+        titleEs: t.titleEs,
+        descriptionPt: t.descriptionPt,
+        descriptionEn: t.descriptionEn,
+        descriptionEs: t.descriptionEs,
         thumbnailUrl: t.imageUrl,
         categoryId: t.categoryId,
       }))
@@ -77,9 +94,8 @@ export async function globalSearch(churchId: number, filters: SearchFilters): Pr
       where: {
         churchId,
         status: "PUBLISHED",
-        ...(q ? { title: { contains: q, mode: "insensitive" } } : {}),
+        ...(q ? matchTitle(q) : {}),
         ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
-        ...(language ? { language } : {}),
       },
       take: 20,
     });
@@ -87,8 +103,12 @@ export async function globalSearch(churchId: number, filters: SearchFilters): Pr
       ...texts.map((t) => ({
         id: t.id,
         type: "TEXT" as const,
-        title: t.title,
-        description: t.description,
+        titlePt: t.titlePt,
+        titleEn: t.titleEn,
+        titleEs: t.titleEs,
+        descriptionPt: t.descriptionPt,
+        descriptionEn: t.descriptionEn,
+        descriptionEs: t.descriptionEs,
         thumbnailUrl: t.imageUrl,
         categoryId: t.categoryId,
       }))
@@ -100,9 +120,8 @@ export async function globalSearch(churchId: number, filters: SearchFilters): Pr
       where: {
         churchId,
         status: "PUBLISHED",
-        ...(q ? { title: { contains: q, mode: "insensitive" } } : {}),
+        ...(q ? matchTitle(q) : {}),
         ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
-        ...(language ? { language } : {}),
       },
       take: 20,
     });
@@ -110,8 +129,12 @@ export async function globalSearch(churchId: number, filters: SearchFilters): Pr
       ...events.map((e) => ({
         id: e.id,
         type: "EVENT" as const,
-        title: e.title,
-        description: e.description,
+        titlePt: e.titlePt,
+        titleEn: e.titleEn,
+        titleEs: e.titleEs,
+        descriptionPt: e.descriptionPt,
+        descriptionEn: e.descriptionEn,
+        descriptionEs: e.descriptionEs,
         thumbnailUrl: e.imageUrl,
         categoryId: e.categoryId,
       }))

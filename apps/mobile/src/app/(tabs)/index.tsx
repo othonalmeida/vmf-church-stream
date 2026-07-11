@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import type { BannerDTO, EventDTO, TrainingDTO, VideoDTO } from '@vmf/shared';
+import { pickLocalized, type BannerDTO, type EventDTO, type TrainingDTO, type VideoDTO } from '@vmf/shared';
 import { Image } from 'expo-image';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,9 @@ import { resolveMediaUrl } from '@/lib/media';
 
 interface ContinueWatchingItem {
   videoId: string;
-  title: string;
+  titlePt: string;
+  titleEn: string;
+  titleEs: string;
   thumbnailUrl: string | null;
   percentualWatched: number;
 }
@@ -40,7 +42,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 }
 
 export default function HomeScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [banners, setBanners] = useState<BannerDTO[]>([]);
   const [continueWatching, setContinueWatching] = useState<ContinueWatchingItem[]>([]);
@@ -75,6 +77,7 @@ export default function HomeScreen() {
           <Section title={t('home.continueWatching')}>
             {continueWatching.map((item) => {
               const thumb = resolveMediaUrl(item.thumbnailUrl);
+              const title = pickLocalized(item.titlePt, item.titleEn, item.titleEs, i18n.language);
               return (
                 <View key={item.videoId} className="w-48 gap-1.5">
                   <View className="aspect-video overflow-hidden rounded-xl bg-surface-raised">
@@ -86,7 +89,7 @@ export default function HomeScreen() {
                     </View>
                   </View>
                   <Text className="text-sm text-ink-950" numberOfLines={1}>
-                    {item.title}
+                    {title}
                   </Text>
                 </View>
               );
@@ -118,7 +121,7 @@ export default function HomeScreen() {
                     />
                   )}
                   <Text className="text-sm text-ink-950" numberOfLines={1}>
-                    {training.title}
+                    {pickLocalized(training.titlePt, training.titleEn, training.titleEs, i18n.language)}
                   </Text>
                 </Card>
               );
@@ -132,7 +135,7 @@ export default function HomeScreen() {
               <Card key={event.id} className="w-48 gap-1.5">
                 <Text className="text-xs text-gold-700">{new Date(event.startDate).toLocaleDateString()}</Text>
                 <Text className="text-sm text-ink-950" numberOfLines={2}>
-                  {event.title}
+                  {pickLocalized(event.titlePt, event.titleEn, event.titleEs, i18n.language)}
                 </Text>
               </Card>
             ))}

@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { Text, View } from "react-native";
-import type { VideoDTO } from "@vmf/shared";
+import { useTranslation } from "react-i18next";
+import { pickLocalized, type VideoDTO } from "@vmf/shared";
 import { resolveMediaUrl } from "@/lib/media";
 
 function formatDuration(seconds: number | null) {
@@ -12,6 +13,8 @@ function formatDuration(seconds: number | null) {
 }
 
 export function VideoCard({ video }: { video: VideoDTO }) {
+  const { i18n } = useTranslation();
+  const title = pickLocalized(video.titlePt, video.titleEn, video.titleEs, i18n.language);
   const thumb = resolveMediaUrl(video.thumbnailUrl);
   const duration = formatDuration(video.duration);
 
@@ -39,7 +42,7 @@ export function VideoCard({ video }: { video: VideoDTO }) {
         )}
       </View>
       <Text className="text-sm font-medium text-ink-950" numberOfLines={1}>
-        {video.title}
+        {title}
       </Text>
     </View>
   );

@@ -1,13 +1,17 @@
 import { z } from "zod";
-import { localeSchema } from "./common";
 import { publishStatusSchema } from "./video";
 
 export const textContentInputSchema = z.object({
-  title: z.string().trim().min(1).max(200),
-  description: z.string().trim().max(500).optional().or(z.literal("")),
-  contentHtml: z.string().min(1),
+  titlePt: z.string().trim().min(1).max(200),
+  titleEn: z.string().trim().min(1).max(200),
+  titleEs: z.string().trim().min(1).max(200),
+  descriptionPt: z.string().trim().max(500).optional().or(z.literal("")),
+  descriptionEn: z.string().trim().max(500).optional().or(z.literal("")),
+  descriptionEs: z.string().trim().max(500).optional().or(z.literal("")),
+  contentHtmlPt: z.string().min(1),
+  contentHtmlEn: z.string().min(1),
+  contentHtmlEs: z.string().min(1),
   categoryId: z.string().uuid(),
-  language: localeSchema,
   imageUrl: z.string().url().optional().or(z.literal("")),
   status: publishStatusSchema.default("DRAFT"),
   featured: z.coerce.boolean().default(false),

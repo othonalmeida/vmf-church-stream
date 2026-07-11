@@ -75,17 +75,24 @@ async function main() {
   const textCategoryId = categories["Comunicados"];
   if (textCategoryId) {
     const existingText = await prisma.textContent.findFirst({
-      where: { title: "Bem-vindo à plataforma", churchId: saoPaulo.id },
+      where: { titlePt: "Bem-vindo à plataforma", churchId: saoPaulo.id },
     });
     if (!existingText) {
       await prisma.textContent.create({
         data: {
-          title: "Bem-vindo à plataforma",
-          description: "Um resumo de como usar a plataforma de streaming da igreja.",
-          contentHtml:
+          titlePt: "Bem-vindo à plataforma",
+          titleEn: "Welcome to the platform",
+          titleEs: "Bienvenido a la plataforma",
+          descriptionPt: "Um resumo de como usar a plataforma de streaming da igreja.",
+          descriptionEn: "A summary of how to use the church's streaming platform.",
+          descriptionEs: "Un resumen de cómo usar la plataforma de streaming de la iglesia.",
+          contentHtmlPt:
             "<h2>Bem-vindo!</h2><p>Aqui você encontra vídeos de cultos, treinamentos, conteúdos e a agenda de eventos da igreja. Use o menu para navegar.</p>",
+          contentHtmlEn:
+            "<h2>Welcome!</h2><p>Here you'll find service videos, trainings, content and the church's event calendar. Use the menu to navigate.</p>",
+          contentHtmlEs:
+            "<h2>¡Bienvenido!</h2><p>Aquí encontrarás videos de cultos, capacitaciones, contenidos y la agenda de eventos de la iglesia. Usa el menú para navegar.</p>",
           categoryId: textCategoryId,
-          language: "pt_BR",
           status: "PUBLISHED",
           featured: true,
           publishedAt: new Date(),
@@ -99,19 +106,22 @@ async function main() {
   const eventCategoryId = categories["Jovens"];
   if (eventCategoryId) {
     const existingEvent = await prisma.event.findFirst({
-      where: { title: "Encontro de Jovens", churchId: saoPaulo.id },
+      where: { titlePt: "Encontro de Jovens", churchId: saoPaulo.id },
     });
     if (!existingEvent) {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() + 7);
       await prisma.event.create({
         data: {
-          title: "Encontro de Jovens",
-          description: "Uma noite de louvor, palavra e comunhão para os jovens da igreja.",
+          titlePt: "Encontro de Jovens",
+          titleEn: "Youth Gathering",
+          titleEs: "Encuentro de Jóvenes",
+          descriptionPt: "Uma noite de louvor, palavra e comunhão para os jovens da igreja.",
+          descriptionEn: "An evening of worship, word and fellowship for the church's youth.",
+          descriptionEs: "Una noche de alabanza, palabra y comunión para los jóvenes de la iglesia.",
           startDate,
           location: "Templo Principal",
           categoryId: eventCategoryId,
-          language: "pt_BR",
           status: "PUBLISHED",
           createdById: admin.id,
           churchId: saoPaulo.id,

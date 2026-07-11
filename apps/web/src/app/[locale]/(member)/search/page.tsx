@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Search as SearchIcon } from "lucide-react";
-import type { CategoryDTO } from "@vmf/shared";
+import { pickLocalized, type CategoryDTO } from "@vmf/shared";
 import { apiFetch, ApiError } from "@/lib/api-client";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -15,8 +15,12 @@ import { categoryName } from "@/lib/category-name";
 interface SearchResultItem {
   id: string;
   type: "VIDEO" | "TRAINING" | "TEXT" | "EVENT";
-  title: string;
-  description: string | null;
+  titlePt: string;
+  titleEn: string;
+  titleEs: string;
+  descriptionPt: string | null;
+  descriptionEn: string | null;
+  descriptionEs: string | null;
   thumbnailUrl: string | null;
   categoryId: string | null;
 }
@@ -88,15 +92,19 @@ export default function SearchPage() {
       {error && <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>}
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {results.map((item) => (
-          <Link key={`${item.type}-${item.id}`} href={`${TYPE_ROUTES[item.type]}/${item.id}`}>
-            <Card className="flex h-full flex-col gap-1 transition-colors hover:border-gold-500">
-              <span className="text-xs uppercase tracking-wide text-gold-700">{typeLabels[item.type]}</span>
-              <h3 className="font-medium text-ink-950">{item.title}</h3>
-              {item.description && <p className="line-clamp-2 text-sm text-ink-600">{item.description}</p>}
-            </Card>
-          </Link>
-        ))}
+        {results.map((item) => {
+          const title = pickLocalized(item.titlePt, item.titleEn, item.titleEs, locale);
+          const description = pickLocalized(item.descriptionPt, item.descriptionEn, item.descriptionEs, locale);
+          return (
+            <Link key={`${item.type}-${item.id}`} href={`${TYPE_ROUTES[item.type]}/${item.id}`}>
+              <Card className="flex h-full flex-col gap-1 transition-colors hover:border-gold-500">
+                <span className="text-xs uppercase tracking-wide text-gold-700">{typeLabels[item.type]}</span>
+                <h3 className="font-medium text-ink-950">{title}</h3>
+                {description && <p className="line-clamp-2 text-sm text-ink-600">{description}</p>}
+              </Card>
+            </Link>
+          );
+        })}
         {results.length === 0 && <p className="text-ink-600">{t("empty")}</p>}
       </div>
     </div>

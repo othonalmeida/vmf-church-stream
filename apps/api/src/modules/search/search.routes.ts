@@ -6,7 +6,6 @@ export default async function searchRoutes(app: FastifyInstance) {
     const query = request.query as {
       q?: string;
       categoryId?: string;
-      language?: string;
       types?: string;
       offlineOnly?: string;
     };
@@ -18,7 +17,6 @@ export default async function searchRoutes(app: FastifyInstance) {
     const results = await globalSearch(request.user.churchId, {
       q: query.q,
       categoryId: query.categoryId,
-      language: query.language as never,
       types,
       offlineOnly: query.offlineOnly === "true",
     });

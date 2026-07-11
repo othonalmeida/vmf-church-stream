@@ -18,7 +18,7 @@ import {
 } from "date-fns";
 import { ptBR, enUS, es } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { EventDTO } from "@vmf/shared";
+import { pickLocalized, type EventDTO } from "@vmf/shared";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
 
@@ -97,7 +97,9 @@ export function EventCalendar({ events, onSelect }: { events: EventDTO[]; onSele
                 className="flex cursor-pointer items-center justify-between rounded-xl border border-surface-border bg-surface-raised px-4 py-3 hover:border-gold-500"
               >
                 <div>
-                  <p className="text-sm font-medium text-ink-950">{event.title}</p>
+                  <p className="text-sm font-medium text-ink-950">
+                    {pickLocalized(event.titlePt, event.titleEn, event.titleEs, locale)}
+                  </p>
                   {event.location && <p className="text-xs text-ink-500">{event.location}</p>}
                 </div>
                 <span className="text-xs text-ink-600">
@@ -130,7 +132,7 @@ export function EventCalendar({ events, onSelect }: { events: EventDTO[]; onSele
                       onClick={() => onSelect?.(event)}
                       className="truncate rounded bg-gold-100 px-1 py-0.5 text-left text-[10px] text-gold-800"
                     >
-                      {event.title}
+                      {pickLocalized(event.titlePt, event.titleEn, event.titleEs, locale)}
                     </button>
                   ))}
                   {dayEvents.length > 2 && <span className="text-[10px] text-ink-400">+{dayEvents.length - 2}</span>}

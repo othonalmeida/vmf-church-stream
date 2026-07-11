@@ -2,8 +2,12 @@ import { z } from "zod";
 import { publishStatusSchema } from "./video";
 
 export const trainingInputSchema = z.object({
-  title: z.string().trim().min(1).max(200),
-  description: z.string().trim().max(2000).optional().or(z.literal("")),
+  titlePt: z.string().trim().min(1).max(200),
+  titleEn: z.string().trim().min(1).max(200),
+  titleEs: z.string().trim().min(1).max(200),
+  descriptionPt: z.string().trim().max(2000).optional().or(z.literal("")),
+  descriptionEn: z.string().trim().max(2000).optional().or(z.literal("")),
+  descriptionEs: z.string().trim().max(2000).optional().or(z.literal("")),
   categoryId: z.string().uuid(),
   imageUrl: z.string().url().optional().or(z.literal("")),
   status: publishStatusSchema.default("DRAFT"),

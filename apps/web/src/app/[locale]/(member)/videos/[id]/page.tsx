@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { Share2, Heart, Download, Check, Loader2 } from "lucide-react";
-import type { VideoDTO, CategoryDTO } from "@vmf/shared";
+import { pickLocalized, type VideoDTO, type CategoryDTO } from "@vmf/shared";
 import { apiFetch, ApiError } from "@/lib/api-client";
 import { VideoPlayer } from "@/components/media/video-player";
 import { Card } from "@/components/ui/card";
@@ -65,7 +65,8 @@ export default function VideoDetailPage() {
   const handleShare = async () => {
     const url = window.location.href;
     if (navigator.share) {
-      await navigator.share({ title: video?.title, url }).catch(() => {});
+      const shareTitle = video ? pickLocalized(video.titlePt, video.titleEn, video.titleEs, locale) : undefined;
+      await navigator.share({ title: shareTitle, url }).catch(() => {});
     } else {
       await navigator.clipboard.writeText(url);
       toast.success(t("linkCopied"));
@@ -97,7 +98,12 @@ export default function VideoDetailPage() {
     setDownloadProgress(0);
     try {
       await downloadVideoForOffline(
-        { id: video.id, title: video.title, thumbnailUrl: video.thumbnailUrl, hlsPlaylistUrl: video.hlsPlaylistUrl },
+        {
+          id: video.id,
+          title: pickLocalized(video.titlePt, video.titleEn, video.titleEs, locale),
+          thumbnailUrl: video.thumbnailUrl,
+          hlsPlaylistUrl: video.hlsPlaylistUrl,
+        },
         user.id,
         setDownloadProgress
       );
@@ -126,6 +132,9 @@ export default function VideoDetailPage() {
     return <p className="text-ink-600">{t("loading")}</p>;
   }
 
+  const title = pickLocalized(video.titlePt, video.titleEn, video.titleEs, locale);
+  const description = pickLocalized(video.descriptionPt, video.descriptionEn, video.descriptionEs, locale);
+
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6">
       <Link href="/videos" className="flex items-center gap-1 text-sm text-ink-600 hover:text-ink-950">
@@ -149,10 +158,9 @@ export default function VideoDetailPage() {
 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-ink-950">{video.title}</h1>
+          <h1 className="text-2xl font-semibold text-ink-950">{title}</h1>
           <div className="mt-1 flex flex-wrap gap-2 text-xs text-ink-500">
             {category && <span>{categoryName(category, locale)}</span>}
-            <span>· {video.originalLanguage}</span>
             {video.publishedAt && <span>· {new Date(video.publishedAt).toLocaleDateString()}</span>}
           </div>
         </div>
@@ -201,9 +209,9 @@ export default function VideoDetailPage() {
         </div>
       </div>
 
-      {video.description && (
+      {description && (
         <Card>
-          <p className="whitespace-pre-line text-sm text-ink-700">{video.description}</p>
+          <p className="whitespace-pre-line text-sm text-ink-700">{description}</p>
         </Card>
       )}
     </div>

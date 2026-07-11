@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
-import type { EventDTO } from "@vmf/shared";
+import { useTranslations, useLocale } from "next-intl";
+import { pickLocalized, type EventDTO } from "@vmf/shared";
 import { apiFetch, ApiError } from "@/lib/api-client";
 import { EventCalendar } from "@/components/calendar/event-calendar";
 import { Modal } from "@/components/ui/modal";
@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 export default function EventsPage() {
   const t = useTranslations("events");
   const tCommon = useTranslations("common");
+  const locale = useLocale();
   const [events, setEvents] = useState<EventDTO[]>([]);
   const [selected, setSelected] = useState<EventDTO | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -30,16 +31,28 @@ export default function EventsPage() {
         <EventCalendar events={events} onSelect={setSelected} />
       </Card>
 
-      <Modal open={!!selected} onClose={() => setSelected(null)} title={selected?.title ?? ""}>
+      <Modal
+        open={!!selected}
+        onClose={() => setSelected(null)}
+        title={selected ? pickLocalized(selected.titlePt, selected.titleEn, selected.titleEs, locale) : ""}
+      >
         {selected && (
           <div className="flex flex-col gap-2 text-sm text-ink-700">
             {selected.imageUrl && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={selected.imageUrl} alt={selected.title} className="mb-2 h-40 w-full rounded-lg object-cover" />
+              <img
+                src={selected.imageUrl}
+                alt={pickLocalized(selected.titlePt, selected.titleEn, selected.titleEs, locale)}
+                className="mb-2 h-40 w-full rounded-lg object-cover"
+              />
             )}
             <p>{new Date(selected.startDate).toLocaleString()}</p>
             {selected.location && <p className="text-ink-600">{selected.location}</p>}
-            {selected.description && <p className="whitespace-pre-line">{selected.description}</p>}
+            {pickLocalized(selected.descriptionPt, selected.descriptionEn, selected.descriptionEs, locale) && (
+              <p className="whitespace-pre-line">
+                {pickLocalized(selected.descriptionPt, selected.descriptionEn, selected.descriptionEs, locale)}
+              </p>
+            )}
           </div>
         )}
       </Modal>

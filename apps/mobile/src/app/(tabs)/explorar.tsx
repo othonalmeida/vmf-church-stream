@@ -1,4 +1,4 @@
-import type { CategoryDTO, TextContentDTO, TrainingDTO, VideoDTO } from '@vmf/shared';
+import { pickLocalized, type CategoryDTO, type TextContentDTO, type TrainingDTO, type VideoDTO } from '@vmf/shared';
 import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -145,7 +145,7 @@ function VideosTab() {
 }
 
 function TrainingsTab() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [trainings, setTrainings] = useState<TrainingDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -167,15 +167,17 @@ function TrainingsTab() {
         renderItem={({ item }) => {
           const image = resolveMediaUrl(item.imageUrl);
           const progress = item.progressPercent ?? 0;
+          const title = pickLocalized(item.titlePt, item.titleEn, item.titleEs, i18n.language);
+          const description = pickLocalized(item.descriptionPt, item.descriptionEn, item.descriptionEs, i18n.language);
           return (
             <Card className="gap-2">
               {image && (
                 <Image source={{ uri: image }} style={{ width: '100%', height: 140, borderRadius: 8 }} contentFit="cover" />
               )}
-              <Text className="font-medium text-ink-950">{item.title}</Text>
-              {item.description && (
+              <Text className="font-medium text-ink-950">{title}</Text>
+              {description && (
                 <Text className="text-sm text-ink-600" numberOfLines={2}>
-                  {item.description}
+                  {description}
                 </Text>
               )}
               <View className="h-1.5 w-full overflow-hidden rounded-full bg-surface-border">
@@ -228,6 +230,8 @@ function TextsTab() {
         contentContainerStyle={{ gap: 16, padding: 24 }}
         renderItem={({ item }) => {
           const image = resolveMediaUrl(item.imageUrl);
+          const title = pickLocalized(item.titlePt, item.titleEn, item.titleEs, i18n.language);
+          const description = pickLocalized(item.descriptionPt, item.descriptionEn, item.descriptionEs, i18n.language);
           return (
             <Card className="flex-1 gap-1.5">
               {image && (
@@ -237,11 +241,11 @@ function TextsTab() {
                 {findCategoryName(item.categoryId)}
               </Text>
               <Text className="font-medium text-ink-950" numberOfLines={1}>
-                {item.title}
+                {title}
               </Text>
-              {item.description && (
+              {description && (
                 <Text className="text-sm text-ink-600" numberOfLines={2}>
-                  {item.description}
+                  {description}
                 </Text>
               )}
             </Card>

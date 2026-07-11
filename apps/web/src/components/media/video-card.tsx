@@ -1,4 +1,7 @@
-import type { VideoDTO } from "@vmf/shared";
+"use client";
+
+import { useLocale } from "next-intl";
+import { pickLocalized, type VideoDTO } from "@vmf/shared";
 import { Link } from "@/i18n/routing";
 import { Play } from "lucide-react";
 
@@ -12,6 +15,8 @@ function formatDuration(seconds: number | null) {
 }
 
 export function VideoCard({ video }: { video: VideoDTO }) {
+  const locale = useLocale();
+  const title = pickLocalized(video.titlePt, video.titleEn, video.titleEs, locale);
   const thumb = video.thumbnailUrl
     ? video.thumbnailUrl.startsWith("http")
       ? video.thumbnailUrl
@@ -25,7 +30,7 @@ export function VideoCard({ video }: { video: VideoDTO }) {
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={thumb}
-            alt={video.title}
+            alt={title}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
           />
         ) : (
@@ -51,7 +56,7 @@ export function VideoCard({ video }: { video: VideoDTO }) {
       </div>
       <div>
         <h3 className="line-clamp-1 text-sm font-medium text-ink-950 transition-colors group-hover:text-gold-700">
-          {video.title}
+          {title}
         </h3>
       </div>
     </Link>

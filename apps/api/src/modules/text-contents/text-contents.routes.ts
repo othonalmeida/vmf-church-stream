@@ -24,7 +24,7 @@ export default async function textContentRoutes(app: FastifyInstance) {
   });
 
   app.get("/", { preHandler: app.authenticate }, async (request, reply) => {
-    const query = request.query as { categoryId?: string; language?: string; q?: string };
+    const query = request.query as { categoryId?: string; q?: string };
     const pagination = paginationQuerySchema.parse(request.query);
     const publishedOnly = request.user.role !== "ADMIN";
     const result = await listTextContents(request.user.churchId, { ...query, publishedOnly }, pagination);

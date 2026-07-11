@@ -14,7 +14,9 @@ export interface FavoriteItem {
   id: string;
   contentType: FavoritableTypeName;
   contentId: string;
-  title: string;
+  titlePt: string;
+  titleEn: string;
+  titleEs: string;
   thumbnailUrl: string | null;
   createdAt: string;
 }
@@ -23,19 +25,27 @@ async function resolveContent(contentType: FavoritableTypeName, contentId: strin
   switch (contentType) {
     case "VIDEO": {
       const video = await prisma.video.findUnique({ where: { id: contentId } });
-      return video ? { title: video.title, thumbnailUrl: video.thumbnailUrl } : null;
+      return video
+        ? { titlePt: video.titlePt, titleEn: video.titleEn, titleEs: video.titleEs, thumbnailUrl: video.thumbnailUrl }
+        : null;
     }
     case "TRAINING": {
       const training = await prisma.training.findUnique({ where: { id: contentId } });
-      return training ? { title: training.title, thumbnailUrl: training.imageUrl } : null;
+      return training
+        ? { titlePt: training.titlePt, titleEn: training.titleEn, titleEs: training.titleEs, thumbnailUrl: training.imageUrl }
+        : null;
     }
     case "TEXT": {
       const text = await prisma.textContent.findUnique({ where: { id: contentId } });
-      return text ? { title: text.title, thumbnailUrl: text.imageUrl } : null;
+      return text
+        ? { titlePt: text.titlePt, titleEn: text.titleEn, titleEs: text.titleEs, thumbnailUrl: text.imageUrl }
+        : null;
     }
     case "EVENT": {
       const event = await prisma.event.findUnique({ where: { id: contentId } });
-      return event ? { title: event.title, thumbnailUrl: event.imageUrl } : null;
+      return event
+        ? { titlePt: event.titlePt, titleEn: event.titleEn, titleEs: event.titleEs, thumbnailUrl: event.imageUrl }
+        : null;
     }
     default:
       return null;
@@ -53,7 +63,9 @@ export async function listFavorites(userId: string): Promise<FavoriteItem[]> {
         id: fav.id,
         contentType: fav.contentType as FavoritableTypeName,
         contentId: fav.contentId,
-        title: content.title,
+        titlePt: content.titlePt,
+        titleEn: content.titleEn,
+        titleEs: content.titleEs,
         thumbnailUrl: content.thumbnailUrl,
         createdAt: fav.createdAt.toISOString(),
       };

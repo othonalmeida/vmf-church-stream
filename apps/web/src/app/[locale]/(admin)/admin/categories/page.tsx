@@ -13,6 +13,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Modal } from "@/components/ui/modal";
 import { Badge } from "@/components/ui/badge";
+import { TranslateButton } from "@/components/ui/translate-button";
 import { useToast } from "@/contexts/toast-context";
 import { useConfirm } from "@/contexts/confirm-context";
 
@@ -159,6 +160,8 @@ function CategoryFormModal({
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<CategoryInput>({ resolver: zodResolver(categoryInputSchema) });
   const toast = useToast();
@@ -197,6 +200,15 @@ function CategoryFormModal({
     <Modal open={open} onClose={onClose} title={category ? "Editar categoria" : "Nova categoria"}>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Input label="Nome (Português)" error={errors.namePt?.message} {...register("namePt")} />
+
+        <TranslateButton
+          getFields={() => ({ namePt: { text: watch("namePt") || "" } })}
+          onTranslated={(result) => {
+            setValue("nameEn", result["en-US"].namePt);
+            setValue("nameEs", result["es-ES"].namePt);
+          }}
+        />
+
         <Input label="Nome (English)" error={errors.nameEn?.message} {...register("nameEn")} />
         <Input label="Nome (Español)" error={errors.nameEs?.message} {...register("nameEs")} />
         <Textarea label="Descrição" rows={2} {...register("description")} />

@@ -42,7 +42,7 @@ export async function getDashboardStats(churchId: number): Promise<DashboardStat
   const videos = videoIds.length ? await prisma.video.findMany({ where: { id: { in: videoIds } } }) : [];
   const mostWatchedVideos = topViews.map((v) => ({
     videoId: v.videoId,
-    title: videos.find((video) => video.id === v.videoId)?.title ?? "—",
+    title: videos.find((video) => video.id === v.videoId)?.titlePt ?? "—",
     views: v._count.videoId,
   }));
 

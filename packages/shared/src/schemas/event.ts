@@ -1,17 +1,19 @@
 import { z } from "zod";
-import { localeSchema } from "./common";
 import { publishStatusSchema } from "./video";
 
 export const eventInputSchema = z
   .object({
-    title: z.string().trim().min(1).max(200),
-    description: z.string().trim().max(2000).optional().or(z.literal("")),
+    titlePt: z.string().trim().min(1).max(200),
+    titleEn: z.string().trim().min(1).max(200),
+    titleEs: z.string().trim().min(1).max(200),
+    descriptionPt: z.string().trim().max(2000).optional().or(z.literal("")),
+    descriptionEn: z.string().trim().max(2000).optional().or(z.literal("")),
+    descriptionEs: z.string().trim().max(2000).optional().or(z.literal("")),
     startDate: z.coerce.date(),
     endDate: z.coerce.date().optional(),
     location: z.string().trim().max(300).optional().or(z.literal("")),
     imageUrl: z.string().url().optional().or(z.literal("")),
     categoryId: z.string().uuid().optional(),
-    language: localeSchema,
     status: publishStatusSchema.default("DRAFT"),
   })
   .refine((d) => !d.endDate || d.endDate >= d.startDate, {
@@ -21,14 +23,17 @@ export const eventInputSchema = z
 export type EventInput = z.infer<typeof eventInputSchema>;
 
 export const eventUpdateSchema = z.object({
-  title: z.string().trim().min(1).max(200).optional(),
-  description: z.string().trim().max(2000).optional().or(z.literal("")),
+  titlePt: z.string().trim().min(1).max(200).optional(),
+  titleEn: z.string().trim().min(1).max(200).optional(),
+  titleEs: z.string().trim().min(1).max(200).optional(),
+  descriptionPt: z.string().trim().max(2000).optional().or(z.literal("")),
+  descriptionEn: z.string().trim().max(2000).optional().or(z.literal("")),
+  descriptionEs: z.string().trim().max(2000).optional().or(z.literal("")),
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
   location: z.string().trim().max(300).optional().or(z.literal("")),
   imageUrl: z.string().url().optional().or(z.literal("")),
   categoryId: z.string().uuid().optional(),
-  language: localeSchema.optional(),
   status: publishStatusSchema.optional(),
 });
 export type EventUpdateInput = z.infer<typeof eventUpdateSchema>;

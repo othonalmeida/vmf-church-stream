@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Pencil, Trash2 } from "lucide-react";
-import { eventInputSchema, type EventInput, type EventDTO, type CategoryDTO, SUPPORTED_LOCALES } from "@vmf/shared";
+import { eventInputSchema, type EventInput, type EventDTO, type CategoryDTO } from "@vmf/shared";
 import { apiFetch, ApiError } from "@/lib/api-client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Modal } from "@/components/ui/modal";
 import { Badge } from "@/components/ui/badge";
 import { ImageUploadField } from "@/components/ui/image-upload";
+import { TranslateButton } from "@/components/ui/translate-button";
 import { useToast } from "@/contexts/toast-context";
 import { useConfirm } from "@/contexts/confirm-context";
 
@@ -51,7 +52,7 @@ export default function AdminEventsPage() {
   }, []);
 
   const handleDelete = async (event: EventDTO) => {
-    if (!(await confirm(`Remover "${event.title}"?`))) return;
+    if (!(await confirm(`Remover "${event.titlePt}"?`))) return;
     try {
       await apiFetch(`/events/${event.id}`, { method: "DELETE" });
       await load();
@@ -91,7 +92,7 @@ export default function AdminEventsPage() {
           <tbody>
             {events.map((event) => (
               <tr key={event.id} className="border-b border-surface-border/60">
-                <td className="px-4 py-3 text-ink-950">{event.title}</td>
+                <td className="px-4 py-3 text-ink-950">{event.titlePt}</td>
                 <td className="px-4 py-3 text-ink-600">{new Date(event.startDate).toLocaleString()}</td>
                 <td className="px-4 py-3">
                   <Badge tone={event.status === "PUBLISHED" ? "success" : "neutral"}>{event.status}</Badge>
@@ -157,17 +158,20 @@ function EventFormModal({
     reset(
       event
         ? {
-            title: event.title,
-            description: event.description ?? "",
+            titlePt: event.titlePt,
+            titleEn: event.titleEn,
+            titleEs: event.titleEs,
+            descriptionPt: event.descriptionPt ?? "",
+            descriptionEn: event.descriptionEn ?? "",
+            descriptionEs: event.descriptionEs ?? "",
             startDate: new Date(toLocalInputValue(event.startDate)) as unknown as Date,
             endDate: event.endDate ? (new Date(toLocalInputValue(event.endDate)) as unknown as Date) : undefined,
             location: event.location ?? "",
             imageUrl: event.imageUrl ?? "",
             categoryId: event.categoryId ?? undefined,
-            language: event.language,
             status: event.status,
           }
-        : { language: "pt-BR", status: "DRAFT" }
+        : { status: "DRAFT" }
     );
   }, [event, reset, open]);
 
@@ -188,8 +192,27 @@ function EventFormModal({
   return (
     <Modal open={open} onClose={onClose} title={event ? "Editar evento" : "Novo evento"}>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <Input label="Título" error={errors.title?.message} {...register("title")} />
-        <Textarea label="Descrição" rows={3} {...register("description")} />
+        <Input label="Título (PT)" error={errors.titlePt?.message} {...register("titlePt")} />
+        <Textarea label="Descrição (PT)" rows={3} {...register("descriptionPt")} />
+
+        <TranslateButton
+          getFields={() => ({
+            titlePt: { text: watch("titlePt") || "" },
+            descriptionPt: { text: watch("descriptionPt") || "" },
+          })}
+          onTranslated={(result) => {
+            setValue("titleEn", result["en-US"].titlePt);
+            setValue("titleEs", result["es-ES"].titlePt);
+            setValue("descriptionEn", result["en-US"].descriptionPt);
+            setValue("descriptionEs", result["es-ES"].descriptionPt);
+          }}
+        />
+
+        <Input label="Título (EN)" error={errors.titleEn?.message} {...register("titleEn")} />
+        <Textarea label="Descrição (EN)" rows={3} {...register("descriptionEn")} />
+        <Input label="Título (ES)" error={errors.titleEs?.message} {...register("titleEs")} />
+        <Textarea label="Descrição (ES)" rows={3} {...register("descriptionEs")} />
+
         <Input
           label="Início"
           type="datetime-local"
@@ -215,13 +238,6 @@ function EventFormModal({
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.namePt}
-            </option>
-          ))}
-        </Select>
-        <Select label="Idioma" {...register("language")}>
-          {SUPPORTED_LOCALES.map((l) => (
-            <option key={l} value={l}>
-              {l}
             </option>
           ))}
         </Select>
